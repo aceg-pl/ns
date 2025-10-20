@@ -17,7 +17,7 @@
 </style>
 </head>
 <body>
-
+<a>📰 News</a>
 <div class="sites" id="siteIcons"></div>
 <div class="feed-list" id="feedList">Loading feeds…</div>
 
@@ -37,34 +37,53 @@ sites.forEach((site,i)=>{
 });
 
 const feeds=[
-  'https://wiadomosci.onet.pl/.feed',
-  'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm',
-  'https://www.polsatnews.pl/rss/wszystkie.xml',
-  'https://wiadomosci.wp.pl/rss.xml',
-  'https://feeds.bbci.co.uk/polska/rss.xml',
-  'https://wydarzenia.interia.pl/feed'
+  {url:'https://wiadomosci.onet.pl/.feed', encoding:'utf-8'},
+  {url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm', encoding:'windows-1250'}, // fix Polish chars
+  {url:'https://www.polsatnews.pl/rss/wszystkie.xml', encoding:'utf-8'},
+  {url:'https://wiadomosci.wp.pl/rss.xml', encoding:'utf-8'},
+  {url:'https://feeds.bbci.co.uk/polska/rss.xml', encoding:'utf-8'},
+  {url:'https://wydarzenia.interia.pl/feed', encoding:'utf-8'}
 ];
-const proxy='https://api.allorigins.win/get?url=';
 
+const proxy='https://api.allorigins.win/get?url=';
 const feedList=document.getElementById('feedList');
 const items=[];
 
-Promise.all(feeds.map(feedURL=>
-  fetch(proxy + encodeURIComponent(feedURL))
-    .then(r=>r.json())
-    .then(data=>{
-      const parser=new DOMParser();
-      const xml=parser.parseFromString(data.contents,"application/xml");
-      const entries=Array.from(xml.querySelectorAll("item, entry"));
-      entries.forEach(e=>{
-        items.push({
-          title:e.querySelector("title")?.textContent || "No title",
-          link:e.querySelector("link")?.textContent || e.querySelector("link")?.getAttribute("href") || "#",
-          date:e.querySelector("pubDate")?.textContent || e.querySelector("updated")?.textContent || new Date().toISOString()
+Promise.all(feeds.map(feed=>{
+  if(feed.encoding==='windows-1250'){
+    return fetch(proxy + encodeURIComponent(feed.url))
+      .then(r=>r.arrayBuffer())
+      .then(buf=>{
+        const dec = new TextDecoder('windows-1250');
+        const text = dec.decode(buf);
+        const parser=new DOMParser();
+        const xml=parser.parseFromString(text,"application/xml");
+        const entries=Array.from(xml.querySelectorAll("item, entry"));
+        entries.forEach(e=>{
+          items.push({
+            title:e.querySelector("title")?.textContent || "No title",
+            link:e.querySelector("link")?.textContent || e.querySelector("link")?.getAttribute("href") || "#",
+            date:e.querySelector("pubDate")?.textContent || e.querySelector("updated")?.textContent || new Date().toISOString()
+          });
         });
-      });
-    }).catch(()=>{})
-)).then(()=>{
+      }).catch(()=>{});
+  } else {
+    return fetch(proxy + encodeURIComponent(feed.url))
+      .then(r=>r.json())
+      .then(data=>{
+        const parser=new DOMParser();
+        const xml=parser.parseFromString(data.contents,"application/xml");
+        const entries=Array.from(xml.querySelectorAll("item, entry"));
+        entries.forEach(e=>{
+          items.push({
+            title:e.querySelector("title")?.textContent || "No title",
+            link:e.querySelector("link")?.textContent || e.querySelector("link")?.getAttribute("href") || "#",
+            date:e.querySelector("pubDate")?.textContent || e.querySelector("updated")?.textContent || new Date().toISOString()
+          });
+        });
+      }).catch(()=>{});
+  }
+})).then(()=>{
   items.sort((a,b)=>new Date(b.date)-new Date(a.date));
   feedList.innerHTML='';
   items.slice(0,100).forEach(e=>{
