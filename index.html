@@ -60,13 +60,26 @@
     'https://feeds.bbci.co.uk/polska/rss.xml',
     'https://wydarzenia.interia.pl/feed'
   ];
-  const api='https://api.rss2json.com/v1/api.json?rss_url=';
+
+  const proxy = 'https://api.allorigins.win/get?url=';
+
   const items=[];
 
-  Promise.all(feeds.map(f=>fetch(api+encodeURIComponent(f))
-    .then(r=>r.json())
-    .then(d=>{ d.items && d.items.forEach(i=>items.push({title:i.title,link:i.link,date:i.pubDate})); })
-    .catch(()=>{})
+  Promise.all(feeds.map(feedURL =>
+    fetch(proxy + encodeURIComponent(feedURL))
+      .then(r => r.json())
+      .then(data => {
+        const parser = new DOMParser();
+        const xml = parser.parseFromString(data.contents, "application/xml");
+        const entries = Array.from(xml.querySelectorAll("item, entry"));
+        entries.forEach(e=>{
+          items.push({
+            title: e.querySelector("title")?.textContent || "No title",
+            link: e.querySelector("link")?.textContent || e.querySelector("link")?.getAttribute("href") || "#",
+            date: e.querySelector("pubDate")?.textContent || e.querySelector("updated")?.textContent || new Date().toISOString()
+          });
+        });
+      }).catch(()=>{})
   )).then(()=>{
     items.sort((a,b)=>new Date(b.date)-new Date(a.date));
     const list=document.getElementById('rssList'); list.innerHTML='';
@@ -83,6 +96,7 @@
       a.appendChild(img); a.appendChild(document.createTextNode(tText)); a.appendChild(span); t.appendChild(a); list.appendChild(t);
     });
   });
+
 })();
 </script>
 </head>
