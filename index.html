@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RSS Mix Viewer</title>
+<script>
+(function(){
+  if(window.__rssMix){ window.__rssMix.remove(); window.__rssMix=null; }
+
+  const e=document.createElement('div'); e.id='__rssMix';
+  Object.assign(e.style,{
+    position:'fixed', top:'10px', left:'10px', right:'10px', bottom:'10px',
+    background:'rgba(255,255,255,0.97)', zIndex:999999, fontFamily:'-apple-system,system-ui,Arial',
+    overflow:'auto', padding:'10px', border:'1px solid #ccc', borderRadius:'8px'
+  });
+
+  const t=document.createElement('div');
+  t.style.display='flex'; t.style.justifyContent='space-between';
+  t.style.flexWrap='wrap'; t.style.alignItems='center'; t.style.marginBottom='8px';
+
+  const a=document.createElement('div'); a.innerHTML='<b>📰 News</b>';
+  const s=document.createElement('div'); s.style.textAlign='center'; s.style.flexGrow='1';
+
+  const sites=[
+    {url:'https://www.onet.pl', domain:'onet.pl'},
+    {url:'https://www.wp.pl', domain:'wp.pl'},
+    {url:'https://www.interia.pl', domain:'interia.pl'},
+    {url:'https://www.gazeta.pl', domain:'gazeta.pl'}
+  ];
+
+  sites.forEach((site,i)=>{
+    const img=document.createElement('img');
+    img.src=`https://www.google.com/s2/favicons?domain=${site.domain}&sz=24`;
+    img.width=24; img.height=24; img.style.verticalAlign='middle'; img.style.margin='0 6px';
+    img.style.cursor='pointer'; img.onclick=()=>window.open(site.url,'_blank');
+    s.appendChild(img); if(i<sites.length-1) s.appendChild(document.createTextNode('•'));
+  });
+
+  const d=document.createElement('div');
+  d.innerHTML="<button id='rssClose' style='font-weight:bold;font-size:18px;border:none;background:none;'>❌</button>";
+  t.appendChild(a); t.appendChild(s); t.appendChild(d);
+
+  const l=document.createElement('div'); l.id='rssList'; l.style.display='grid'; l.style.gap='8px';
+
+  function resizeGrid(){
+    const w=window.innerWidth;
+    l.style.gridTemplateColumns = w<500?'repeat(2,1fr)': w>window.innerHeight?'repeat(4,1fr)':'repeat(3,1fr)';
+  }
+  resizeGrid(); window.addEventListener('resize',resizeGrid);
+
+  e.appendChild(t); e.appendChild(l); document.body.appendChild(e);
+  document.getElementById('rssClose').onclick=()=>e.remove(); window.__rssMix=e;
+
+  const feeds=[
+    'https://wiadomosci.onet.pl/.feed',
+    'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm',
+    'https://www.polsatnews.pl/rss/wszystkie.xml',
+    'https://wiadomosci.wp.pl/rss.xml',
+    'https://feeds.bbci.co.uk/polska/rss.xml',
+    'https://wydarzenia.interia.pl/feed'
+  ];
+  const api='https://api.rss2json.com/v1/api.json?rss_url=';
+  const items=[];
+
+  Promise.all(feeds.map(f=>fetch(api+encodeURIComponent(f))
+    .then(r=>r.json())
+    .then(d=>{ d.items && d.items.forEach(i=>items.push({title:i.title,link:i.link,date:i.pubDate})); })
+    .catch(()=>{})
+  )).then(()=>{
+    items.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    const list=document.getElementById('rssList'); list.innerHTML='';
+    items.slice(0,100).forEach(e=>{
+      const t=document.createElement('div');
+      t.style.border='1px solid #ddd'; t.style.padding='6px'; t.style.borderRadius='6px';
+      t.style.background='#fff'; t.style.fontSize='13px'; t.style.height='60px'; t.style.overflow='hidden';
+      const a=document.createElement('a'); a.href=e.link; a.target='_blank'; a.style.color='#007aff'; a.style.textDecoration='none';
+      const img=document.createElement('img'); img.src=`https://www.google.com/s2/favicons?domain=${new URL(e.link).hostname}&sz=16`;
+      img.width=12; img.height=12; img.style.verticalAlign='middle'; img.style.marginRight='4px';
+      let tText=e.title.split(' ').slice(0,14).join(' '); if(e.title.split(' ').length>14) tText+='…';
+      const span=document.createElement('span'); span.style.color='#666';
+      const r=new Date(e.date), d=new Date(); span.textContent=' '+( (d-r)/36e5<24 ? `${String(r.getHours()).padStart(2,'0')}:${String(r.getMinutes()).padStart(2,'0')}` : `${String(r.getDate()).padStart(2,'0')}/${String(r.getMonth()+1).padStart(2,'0')}` );
+      a.appendChild(img); a.appendChild(document.createTextNode(tText)); a.appendChild(span); t.appendChild(a); list.appendChild(t);
+    });
+  });
+})();
+</script>
+</head>
+<body>
+<p>The RSS overlay is displayed above. Click site icons to open their pages in new tabs.</p>
+</body>
+</html>
