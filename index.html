@@ -4,53 +4,60 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RSS Mix Viewer</title>
+<style>
+  body{margin:0;font-family:-apple-system,system-ui,Arial;}
+</style>
+</head>
+<body>
 <script>
 (function(){
   if(window.__rssMix){ window.__rssMix.remove(); window.__rssMix=null; }
 
-  const e=document.createElement('div'); e.id='__rssMix';
-  Object.assign(e.style,{
-    position:'fixed', top:'10px', left:'10px', right:'10px', bottom:'10px',
-    background:'rgba(255,255,255,0.97)', zIndex:999999, fontFamily:'-apple-system,system-ui,Arial',
-    overflow:'auto', padding:'10px', border:'1px solid #ccc', borderRadius:'8px'
+  const container=document.createElement('div'); 
+  container.id='__rssMix';
+  Object.assign(container.style,{
+    position:'fixed',top:'10px',left:'10px',right:'10px',bottom:'10px',
+    background:'rgba(255,255,255,0.97)',zIndex:999999,fontFamily:'-apple-system,system-ui,Arial',
+    overflow:'auto',padding:'10px',border:'1px solid #ccc',borderRadius:'8px'
   });
 
-  const t=document.createElement('div');
-  t.style.display='flex'; t.style.justifyContent='space-between';
-  t.style.flexWrap='wrap'; t.style.alignItems='center'; t.style.marginBottom='8px';
+  const header=document.createElement('div');
+  header.style.display='flex';header.style.justifyContent='space-between';
+  header.style.flexWrap='wrap';header.style.alignItems='center';header.style.marginBottom='8px';
 
-  const a=document.createElement('div'); a.innerHTML='<b>📰 News</b>';
-  const s=document.createElement('div'); s.style.textAlign='center'; s.style.flexGrow='1';
+  const title=document.createElement('div'); title.innerHTML='<b>📰 News</b>';
 
+  const icons=document.createElement('div'); icons.style.textAlign='center'; icons.style.flexGrow='1';
   const sites=[
     {url:'https://www.onet.pl', domain:'onet.pl'},
     {url:'https://www.wp.pl', domain:'wp.pl'},
     {url:'https://www.interia.pl', domain:'interia.pl'},
     {url:'https://www.gazeta.pl', domain:'gazeta.pl'}
   ];
-
   sites.forEach((site,i)=>{
     const img=document.createElement('img');
     img.src=`https://www.google.com/s2/favicons?domain=${site.domain}&sz=24`;
     img.width=24; img.height=24; img.style.verticalAlign='middle'; img.style.margin='0 6px';
     img.style.cursor='pointer'; img.onclick=()=>window.open(site.url,'_blank');
-    s.appendChild(img); if(i<sites.length-1) s.appendChild(document.createTextNode('•'));
+    icons.appendChild(img); if(i<sites.length-1) icons.appendChild(document.createTextNode('•'));
   });
 
-  const d=document.createElement('div');
-  d.innerHTML="<button id='rssClose' style='font-weight:bold;font-size:18px;border:none;background:none;'>❌</button>";
-  t.appendChild(a); t.appendChild(s); t.appendChild(d);
+  const closeBtn=document.createElement('button');
+  closeBtn.textContent='❌';
+  closeBtn.style.fontWeight='bold'; closeBtn.style.fontSize='18px'; closeBtn.style.border='none'; closeBtn.style.background='none';
+  closeBtn.onclick=()=>container.remove();
 
-  const l=document.createElement('div'); l.id='rssList'; l.style.display='grid'; l.style.gap='8px';
+  header.appendChild(title); header.appendChild(icons); header.appendChild(closeBtn);
 
+  const list=document.createElement('div'); list.id='rssList'; list.style.display='grid'; list.style.gap='8px';
   function resizeGrid(){
     const w=window.innerWidth;
-    l.style.gridTemplateColumns = w<500?'repeat(2,1fr)': w>window.innerHeight?'repeat(4,1fr)':'repeat(3,1fr)';
+    list.style.gridTemplateColumns=w<500?'repeat(2,1fr)': w>window.innerHeight?'repeat(4,1fr)':'repeat(3,1fr)';
   }
   resizeGrid(); window.addEventListener('resize',resizeGrid);
 
-  e.appendChild(t); e.appendChild(l); document.body.appendChild(e);
-  document.getElementById('rssClose').onclick=()=>e.remove(); window.__rssMix=e;
+  container.appendChild(header); container.appendChild(list); document.body.appendChild(container);
+  window.__rssMix=container;
 
   const feeds=[
     'https://wiadomosci.onet.pl/.feed',
@@ -61,46 +68,43 @@
     'https://wydarzenia.interia.pl/feed'
   ];
 
-  const proxy = 'https://api.allorigins.win/get?url=';
-
+  const proxy='https://api.allorigins.win/get?url='; // CORS proxy
   const items=[];
 
   Promise.all(feeds.map(feedURL =>
     fetch(proxy + encodeURIComponent(feedURL))
-      .then(r => r.json())
-      .then(data => {
-        const parser = new DOMParser();
-        const xml = parser.parseFromString(data.contents, "application/xml");
-        const entries = Array.from(xml.querySelectorAll("item, entry"));
+      .then(r=>r.json())
+      .then(data=>{
+        const parser=new DOMParser();
+        const xml=parser.parseFromString(data.contents,"application/xml");
+        const entries=Array.from(xml.querySelectorAll("item, entry"));
         entries.forEach(e=>{
           items.push({
-            title: e.querySelector("title")?.textContent || "No title",
-            link: e.querySelector("link")?.textContent || e.querySelector("link")?.getAttribute("href") || "#",
-            date: e.querySelector("pubDate")?.textContent || e.querySelector("updated")?.textContent || new Date().toISOString()
+            title:e.querySelector("title")?.textContent || "No title",
+            link:e.querySelector("link")?.textContent || e.querySelector("link")?.getAttribute("href") || "#",
+            date:e.querySelector("pubDate")?.textContent || e.querySelector("updated")?.textContent || new Date().toISOString()
           });
         });
       }).catch(()=>{})
   )).then(()=>{
     items.sort((a,b)=>new Date(b.date)-new Date(a.date));
-    const list=document.getElementById('rssList'); list.innerHTML='';
+    list.innerHTML='';
     items.slice(0,100).forEach(e=>{
-      const t=document.createElement('div');
-      t.style.border='1px solid #ddd'; t.style.padding='6px'; t.style.borderRadius='6px';
-      t.style.background='#fff'; t.style.fontSize='13px'; t.style.height='60px'; t.style.overflow='hidden';
+      const entry=document.createElement('div');
+      entry.style.border='1px solid #ddd'; entry.style.padding='6px'; entry.style.borderRadius='6px';
+      entry.style.background='#fff'; entry.style.fontSize='13px'; entry.style.height='60px'; entry.style.overflow='hidden';
       const a=document.createElement('a'); a.href=e.link; a.target='_blank'; a.style.color='#007aff'; a.style.textDecoration='none';
       const img=document.createElement('img'); img.src=`https://www.google.com/s2/favicons?domain=${new URL(e.link).hostname}&sz=16`;
       img.width=12; img.height=12; img.style.verticalAlign='middle'; img.style.marginRight='4px';
       let tText=e.title.split(' ').slice(0,14).join(' '); if(e.title.split(' ').length>14) tText+='…';
       const span=document.createElement('span'); span.style.color='#666';
-      const r=new Date(e.date), d=new Date(); span.textContent=' '+( (d-r)/36e5<24 ? `${String(r.getHours()).padStart(2,'0')}:${String(r.getMinutes()).padStart(2,'0')}` : `${String(r.getDate()).padStart(2,'0')}/${String(r.getMonth()+1).padStart(2,'0')}` );
-      a.appendChild(img); a.appendChild(document.createTextNode(tText)); a.appendChild(span); t.appendChild(a); list.appendChild(t);
+      const r=new Date(e.date), d=new Date(); span.textContent=' '+((d-r)/36e5<24 ? `${String(r.getHours()).padStart(2,'0')}:${String(r.getMinutes()).padStart(2,'0')}` : `${String(r.getDate()).padStart(2,'0')}/${String(r.getMonth()+1).padStart(2,'0')}`);
+      a.appendChild(img); a.appendChild(document.createTextNode(tText)); a.appendChild(span); entry.appendChild(a); list.appendChild(entry);
     });
   });
 
 })();
 </script>
-</head>
-<body>
-<p>The RSS overlay is displayed above. Click site icons to open their pages in new tabs.</p>
+<p>The RSS overlay should appear above. Click the icons to open the news sites.</p>
 </body>
 </html>
