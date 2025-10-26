@@ -82,50 +82,43 @@ const feedsX2=[
 const proxy='https://api.allorigins.win/get?url=';
 
 // fetch and render function for each block
-function fetchAndRender(feeds, containerId){
-  const feedList=document.getElementById(containerId);
-  const items=[];
-  Promise.all(feeds.map(feed=>{
-    if(feed.encoding==='windows-1250')
-      return fetch(proxy+encodeURIComponent(feed.url)).then(r=>r.arrayBuffer()).then(buf=>{
+function fetchWithRetry(feed,retries){
+  return (feed.encoding==='windows-1250'
+    ? fetch(proxy+encodeURIComponent(feed.url)).then(r=>r.arrayBuffer()).then(buf=>{
         const dec=new TextDecoder('windows-1250');
         const text=dec.decode(buf);
-        const parser=new DOMParser();
-        const xml=parser.parseFromString(text,"application/xml");
-        Array.from(xml.querySelectorAll("item,entry")).forEach(e=>{
-          items.push({
-            title:e.querySelector("title")?.textContent||"No title",
-            link:e.querySelector("link")?.textContent||e.querySelector("link")?.getAttribute("href")||"#",
-            date:e.querySelector("pubDate")?.textContent||e.querySelector("updated")?.textContent||new Date().toISOString()
-          });
-        });
-      }).catch(()=>{});
-    else
-      return fetch(proxy+encodeURIComponent(feed.url)).then(r=>r.json()).then(data=>{
-        const parser=new DOMParser();
-        const xml=parser.parseFromString(data.contents,"application/xml");
-        Array.from(xml.querySelectorAll("item,entry")).forEach(e=>{
-          items.push({
-            title:e.querySelector("title")?.textContent||"No title",
-            link:e.querySelector("link")?.textContent||e.querySelector("link")?.getAttribute("href")||"#",
-            date:e.querySelector("pubDate")?.textContent||e.querySelector("updated")?.textContent||new Date().toISOString()
-          });
-        });
-      }).catch(()=>{});
-  })).then(()=>{
+        return {success:1,text};
+      })
+    : fetch(proxy+encodeURIComponent(feed.url)).then(r=>r.json()).then(data=>{
+        return {success:1,text:data.contents};
+      })
+  ).catch(_=>{
+    if(retries>0)return new Promise(res=>setTimeout(()=>res(fetchWithRetry(feed,retries-1)),2000));
+    return {success:0,text:''};
+  });
+}
+function fetchAndRender(feeds,containerId){
+  const feedList=document.getElementById(containerId),items=[];
+  Promise.all(feeds.map(feed=>fetchWithRetry(feed,1).then(res=>{
+    if(!res.success){items.push({title:'Feed error',link:'#',date:new Date().toISOString()});return;}
+    const parser=new DOMParser(),xml=parser.parseFromString(res.text,"application/xml");
+    Array.from(xml.querySelectorAll("item,entry")).forEach(e=>{
+      items.push({title:e.querySelector("title")?.textContent||"No title",link:e.querySelector("link")?.textContent||e.querySelector("link")?.getAttribute("href")||"#",date:e.querySelector("pubDate")?.textContent||e.querySelector("updated")?.textContent||new Date().toISOString()});
+    });
+  }))).then(()=>{
     items.sort((a,b)=>new Date(b.date)-new Date(a.date));
     feedList.innerHTML='';
     items.slice(0,100).forEach(e=>{
       const entry=document.createElement('div');
       entry.className='feed-item';
-      const a=document.createElement('a'); a.href=e.link; a.target='_blank';
+      const a=document.createElement('a'); a.href=e.link;a.target='_blank';
       const img=document.createElement('img'); img.src=`https://www.google.com/s2/favicons?domain=${new URL(e.link).hostname}&sz=16`;
-      let tText=e.title.split(' ').slice(0,14).join(' '); if(e.title.split(' ').length>14) tText+='…';
+      let tText=e.title.split(' ').slice(0,14).join(' ');if(e.title.split(' ').length>14)tText+='…';
       const span=document.createElement('span');
-      const r=new Date(e.date), d=new Date();
+      const r=new Date(e.date),d=new Date();
       span.textContent=' '+((d-r)/36e5<24?`${String(r.getHours()).padStart(2,'0')}:${String(r.getMinutes()).padStart(2,'0')}`:`${String(r.getDate()).padStart(2,'0')}/${String(r.getMonth()+1).padStart(2,'0')}`);
-      a.appendChild(img); a.appendChild(document.createTextNode(tText)); a.appendChild(span);
-      entry.appendChild(a); feedList.appendChild(entry);
+      a.appendChild(img);a.appendChild(document.createTextNode(tText));a.appendChild(span);
+      entry.appendChild(a);feedList.appendChild(entry);
     });
   });
 }
