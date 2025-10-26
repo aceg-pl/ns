@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>RSS Mix Viewer</title>
 <style>
   body{margin:0;padding:20px;font-family:-apple-system,system-ui,Arial;background:#f5f5f5;}
   h1{margin-bottom:10px;}
   .sites{margin-bottom:20px;text-align:center;}
   .sites img{width:24px;height:24px;margin:0 6px;cursor:pointer;vertical-align:middle;}
+  .block-title{font-weight:600;font-size:15px;margin:20px 0 8px 0;}
   .feed-list{display:grid;grid-gap:8px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}
   .feed-item{background:#fff;padding:6px;border-radius:6px;border:1px solid #ddd;overflow:hidden;font-size:13px;height:60px;}
   .feed-item img{width:12px;height:12px;vertical-align:middle;margin-right:4px;}
@@ -18,7 +19,15 @@
 </head>
 <body>
 <div class="sites" id="siteIcons"></div>
-<div class="feed-list" id="feedList">Loading feeds…</div>
+
+<div class="block-title">Main Feeds</div>
+<div class="feed-list" id="feedListMain">Loading feeds…</div>
+
+<div class="block-title">Extra Feeds 1</div>
+<div class="feed-list" id="feedListX1">Loading feeds…</div>
+
+<div class="block-title">Extra Feeds 2</div>
+<div class="feed-list" id="feedListX2">Loading feeds…</div>
 
 <script>
 const sites=[
@@ -35,77 +44,88 @@ const sites=[
   {url:'https://www.reuters.com', domain:'reuters.com'},
   {url:'https://www.flashscore.pl', domain:'flashscore.pl'}
 ];
+
 const siteIcons=document.getElementById('siteIcons');
-sites.forEach((site,i)=>{
+sites.forEach(site=>{
   const img=document.createElement('img');
   img.src=`https://www.google.com/s2/favicons?domain=${site.domain}&sz=24`;
   img.onclick=()=>window.open(site.url,'_blank');
   siteIcons.appendChild(img);
 });
 
-const feeds=[
+const feedsMain=[
   {url:'https://wiadomosci.onet.pl/.feed', encoding:'utf-8'},
-  {url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm', encoding:'windows-1250'}, // fix Polish chars
+  {url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm', encoding:'ISO-8859-2'},
   {url:'https://www.polsatnews.pl/rss/wszystkie.xml', encoding:'utf-8'},
   {url:'https://wiadomosci.wp.pl/rss.xml', encoding:'utf-8'},
   {url:'https://feeds.bbci.co.uk/polska/rss.xml', encoding:'utf-8'},
   {url:'https://wydarzenia.interia.pl/feed', encoding:'utf-8'}
 ];
 
-const proxy='https://api.allorigins.win/get?url=';
-const feedList=document.getElementById('feedList');
-const items=[];
+const feedsX1=[
+  {url:'http://rss.cnn.com/rss/cnn_topstories.rss', encoding:'utf-8'},
+  {url:'https://feeds.bbci.co.uk/news/rss.xml', encoding:'utf-8'}
+];
 
-Promise.all(feeds.map(feed=>{
-  if(feed.encoding==='windows-1250'){
-    return fetch(proxy + encodeURIComponent(feed.url))
-      .then(r=>r.arrayBuffer())
-      .then(buf=>{
-        const dec = new TextDecoder('windows-1250');
-        const text = dec.decode(buf);
+const feedsX2=[
+  {url:'https://www.polsatsport.pl/rss/wszystkie.xml', encoding:'utf-8'}
+];
+
+const proxy='https://api.allorigins.win/get?url=';
+
+// fetch and render function for each block
+function fetchAndRender(feeds, containerId){
+  const feedList=document.getElementById(containerId);
+  const items=[];
+  Promise.all(feeds.map(feed=>{
+    if(feed.encoding==='windows-1250')
+      return fetch(proxy+encodeURIComponent(feed.url)).then(r=>r.arrayBuffer()).then(buf=>{
+        const dec=new TextDecoder('windows-1250');
+        const text=dec.decode(buf);
         const parser=new DOMParser();
         const xml=parser.parseFromString(text,"application/xml");
-        const entries=Array.from(xml.querySelectorAll("item, entry"));
-        entries.forEach(e=>{
+        Array.from(xml.querySelectorAll("item,entry")).forEach(e=>{
           items.push({
-            title:e.querySelector("title")?.textContent || "No title",
-            link:e.querySelector("link")?.textContent || e.querySelector("link")?.getAttribute("href") || "#",
-            date:e.querySelector("pubDate")?.textContent || e.querySelector("updated")?.textContent || new Date().toISOString()
+            title:e.querySelector("title")?.textContent||"No title",
+            link:e.querySelector("link")?.textContent||e.querySelector("link")?.getAttribute("href")||"#",
+            date:e.querySelector("pubDate")?.textContent||e.querySelector("updated")?.textContent||new Date().toISOString()
           });
         });
       }).catch(()=>{});
-  } else {
-    return fetch(proxy + encodeURIComponent(feed.url))
-      .then(r=>r.json())
-      .then(data=>{
+    else
+      return fetch(proxy+encodeURIComponent(feed.url)).then(r=>r.json()).then(data=>{
         const parser=new DOMParser();
         const xml=parser.parseFromString(data.contents,"application/xml");
-        const entries=Array.from(xml.querySelectorAll("item, entry"));
-        entries.forEach(e=>{
+        Array.from(xml.querySelectorAll("item,entry")).forEach(e=>{
           items.push({
-            title:e.querySelector("title")?.textContent || "No title",
-            link:e.querySelector("link")?.textContent || e.querySelector("link")?.getAttribute("href") || "#",
-            date:e.querySelector("pubDate")?.textContent || e.querySelector("updated")?.textContent || new Date().toISOString()
+            title:e.querySelector("title")?.textContent||"No title",
+            link:e.querySelector("link")?.textContent||e.querySelector("link")?.getAttribute("href")||"#",
+            date:e.querySelector("pubDate")?.textContent||e.querySelector("updated")?.textContent||new Date().toISOString()
           });
         });
       }).catch(()=>{});
-  }
-})).then(()=>{
-  items.sort((a,b)=>new Date(b.date)-new Date(a.date));
-  feedList.innerHTML='';
-  items.slice(0,100).forEach(e=>{
-    const entry=document.createElement('div');
-    entry.className='feed-item';
-    const a=document.createElement('a'); a.href=e.link; a.target='_blank';
-    const img=document.createElement('img'); img.src=`https://www.google.com/s2/favicons?domain=${new URL(e.link).hostname}&sz=16`;
-    let tText=e.title.split(' ').slice(0,14).join(' '); if(e.title.split(' ').length>14) tText+='…';
-    const span=document.createElement('span');
-    const r=new Date(e.date), d=new Date();
-    span.textContent=' '+((d-r)/36e5<24 ? `${String(r.getHours()).padStart(2,'0')}:${String(r.getMinutes()).padStart(2,'0')}` : `${String(r.getDate()).padStart(2,'0')}/${String(r.getMonth()+1).padStart(2,'0')}`);
-    a.appendChild(img); a.appendChild(document.createTextNode(tText)); a.appendChild(span);
-    entry.appendChild(a); feedList.appendChild(entry);
+  })).then(()=>{
+    items.sort((a,b)=>new Date(b.date)-new Date(a.date));
+    feedList.innerHTML='';
+    items.slice(0,100).forEach(e=>{
+      const entry=document.createElement('div');
+      entry.className='feed-item';
+      const a=document.createElement('a'); a.href=e.link; a.target='_blank';
+      const img=document.createElement('img'); img.src=`https://www.google.com/s2/favicons?domain=${new URL(e.link).hostname}&sz=16`;
+      let tText=e.title.split(' ').slice(0,14).join(' '); if(e.title.split(' ').length>14) tText+='…';
+      const span=document.createElement('span');
+      const r=new Date(e.date), d=new Date();
+      span.textContent=' '+((d-r)/36e5<24?`${String(r.getHours()).padStart(2,'0')}:${String(r.getMinutes()).padStart(2,'0')}`:`${String(r.getDate()).padStart(2,'0')}/${String(r.getMonth()+1).padStart(2,'0')}`);
+      a.appendChild(img); a.appendChild(document.createTextNode(tText)); a.appendChild(span);
+      entry.appendChild(a); feedList.appendChild(entry);
+    });
   });
-});
+}
+
+// Call for each block
+fetchAndRender(feedsMain,'feedListMain');
+fetchAndRender(feedsX1,'feedListX1');
+fetchAndRender(feedsX2,'feedListX2');
 </script>
 </body>
 </html>
