@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>RSS Mix Viewer</title>
+<title>News Portal</title>
 <style>
   body{margin:0;padding:20px;font-family:-apple-system,system-ui,Arial;background:#f5f5f5;}
   h1{margin-bottom:10px;}
@@ -31,11 +31,13 @@
 <div class="sites" id="siteIcons"></div>
 
 <div class="block-title">📰 Wiadomości</div>
-<div class="scroll-pane"><div class="feed-list" id="feedListMain">Loading feeds…</div></div>
-<div class="block-title">🌎 News</div>
-<div class="scroll-pane"><div class="feed-list" id="feedListX1">Loading feeds…</div></div>
+<div class="scroll-pane"><div class="feed-list" id="feedListX0">Loading feeds…</div></div>
 <div class="block-title">⚽️ Sport</div>
+<div class="scroll-pane"><div class="feed-list" id="feedListX1">Loading feeds…</div></div>
+<div class="block-title">🖥️ Tech</div>
 <div class="scroll-pane"><div class="feed-list" id="feedListX2">Loading feeds…</div></div>
+<div class="block-title">🌎 News</div>
+<div class="scroll-pane"><div class="feed-list" id="feedListX3">Loading feeds…</div></div>
 
 <script>
 const sites=[
@@ -61,7 +63,7 @@ sites.forEach(site=>{
   siteIcons.appendChild(img);
 });
 
-const feedsMain=[
+const feedsX0=[
   {url:'https://wiadomosci.onet.pl/.feed', encoding:'utf-8'},
   {url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm', encoding:'Windows-1250'},
   {url:'https://www.polsatnews.pl/rss/wszystkie.xml', encoding:'utf-8'},
@@ -71,14 +73,24 @@ const feedsMain=[
 ];
 
 const feedsX1=[
-  {url:'http://rss.cnn.com/rss/cnn_topstories.rss', encoding:'utf-8'},
-  {url:'https://feeds.bbci.co.uk/news/rss.xml', encoding:'utf-8'}
-];
-
-const feedsX2=[
   {url:'https://www.polsatsport.pl/rss/wszystkie.xml', encoding:'utf-8'}
 ];
 
+const feedsX2=[
+  {url:'http://www.theverge.com/rss/full.xml', encoding:'utf-8'},
+  {url:'http://www.engadget.com/rss-full.xml', encoding:'utf-8'},
+  {url:'https://blog.cloudflare.com/rss/', encoding:'utf-8'},
+  {url:'https://blog.openai.com/rss/', encoding:'utf-8'},
+  {url:'https://news.mit.edu/rss/topic/science-technology-and-society', encoding:'utf-8'},
+  {url:'https://www.sciencealert.com/feed', encoding:'utf-8'},
+  {url:'https://singularityhub.com/', encoding:'utf-8'}
+];
+
+const feedsX3=[
+  {url:'http://rss.cnn.com/rss/cnn_topstories.rss', encoding:'utf-8'},
+  {url:'https://feeds.bbci.co.uk/news/rss.xml', encoding:'utf-8'}
+];
+  
 const proxy='https://api.allorigins.win/get?url=';
 
 // fetch and render function for each block
@@ -124,7 +136,7 @@ function fetchAndRender(feeds,containerId){
 }
 
 // Call for each block
-fetchAndRender(feedsMain,'feedListMain');
+fetchAndRender(feedsX0,'feedListX0');
 fetchAndRender(feedsX1,'feedListX1');
 fetchAndRender(feedsX2,'feedListX2');
 </script>
