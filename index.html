@@ -15,19 +15,27 @@
   .feed-item img{width:12px;height:12px;vertical-align:middle;margin-right:4px;}
   .feed-item a{text-decoration:none;color:#007aff;}
   .feed-item span{color:#666;margin-left:4px;font-size:12px;}
+  .scroll-pane {
+  max-height: 264px; /* 4 boxes × 60px + gaps */
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  padding: 0 6px;
+     }
 </style>
 </head>
 <body>
 <div class="sites" id="siteIcons"></div>
 
 <div class="block-title">📰 Wiadomości</div>
-<div class="feed-list" id="feedListMain">Loading feeds…</div>
-
+<div class="scroll-pane"><div class="feed-list" id="feedListMain">Loading feeds…</div></div>
 <div class="block-title">🌎 News</div>
-<div class="feed-list" id="feedListX1">Loading feeds…</div>
-
+<div class="scroll-pane"><div class="feed-list" id="feedListX1">Loading feeds…</div></div>
 <div class="block-title">⚽️ Sport</div>
-<div class="feed-list" id="feedListX2">Loading feeds…</div>
+<div class="scroll-pane"><div class="feed-list" id="feedListX2">Loading feeds…</div></div>
 
 <script>
 const sites=[
