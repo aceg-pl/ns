@@ -7,7 +7,8 @@
 <style>
   body{margin:0;padding:16px;font-family:-apple-system,system-ui,Arial;background:#f5f5f5;}
   h1{margin-bottom:10px;}
-  .sites{margin-bottom:18px;text-align:center;}
+  .sites {margin-bottom: 8px;display: grid;grid-template-columns: repeat(8, 1fr);gap: 12px;justify-items: center;}
+@media (max-width: 600px) {.sites {grid-template-columns: repeat(4, 1fr);}}
   .sites img{width:24px;height:24px;margin:0 6px;cursor:pointer;vertical-align:middle;}
   .block-title{font-weight:600;font-size:14px;margin:8px 0 8px 0;}
   .feed-list{display:grid;grid-gap:8px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}
@@ -40,6 +41,7 @@
 <div class="scroll-pane"><div class="feed-list" id="feedListX3">Loading feeds…</div></div>
 
 <script>
+
 const sites=[
   {url:'https://www.onet.pl', domain:'onet.pl'},
   {url:'https://www.wp.pl', domain:'wp.pl'},
