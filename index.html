@@ -37,8 +37,18 @@
 </head>
 <body>
 <div class="sites" id="siteIcons"></div>
-<input type="search" id="titleSearch" placeholder="Search Titles..." 
-  style="width:400px; max-width:100%; padding:8px; margin:8px auto 12px auto; border-radius:6px; border:1px solid #ccc; font-size:14px; box-sizing:border-box; display:block;">
+
+<div id="searchLine" style="position:relative; display:flex; align-items:center; justify-content:center; margin:8px auto 12px auto; max-width:400px; width:100%;">
+  <input type="search" id="titleSearch" placeholder="Search Titles..." 
+    style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
+//  style="width:400px; max-width:100%; margin:8px auto 12px auto; display:block"
+  
+  <div id="scrollButtons" style="position:absolute; right:4px; display:flex; gap:8px; user-select:none; font-size:20px; cursor:pointer;">
+    <div id="pageDownArrow" title="Scroll one page down">⬇️</div>
+    <div id="topArrow" title="Scroll to top">⏫</div>
+  </div>
+</div>
+
 
 <div class="block-title">📰 Wiadomości</div>
 <div class="scroll-pane"><div class="feed-list" id="feedListX0">Loading feeds…</div></div>
@@ -150,6 +160,21 @@ titleSearch.addEventListener('input', () => {
     item.style.display = text.includes(filter) ? '' : 'none';
   });
 });
+
+const scrollPanes = document.querySelectorAll('.scroll-pane');
+
+document.getElementById('pageDownArrow').onclick = () => {
+  scrollPanes.forEach(pane => {
+    pane.scrollBy({ top: pane.clientHeight, behavior: 'smooth' });
+  });
+};
+
+document.getElementById('topArrow').onclick = () => {
+  scrollPanes.forEach(pane => {
+    pane.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+};
+
 
 // Call for each block
 fetchAndRender(feedsX0,'feedListX0');
