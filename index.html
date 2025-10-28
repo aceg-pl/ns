@@ -160,18 +160,12 @@ titleSearch.addEventListener('input', () => {
   });
 });
 
-const scrollPanes = document.querySelectorAll('.scroll-pane');
-
 document.getElementById('pageDownArrow').onclick = () => {
-  scrollPanes.forEach(pane => {
-    pane.scrollBy({ top: pane.clientHeight, behavior: 'smooth' });
-  });
+  window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
 };
 
 document.getElementById('topArrow').onclick = () => {
-  scrollPanes.forEach(pane => {
-    pane.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 
