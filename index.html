@@ -7,7 +7,7 @@
 <style>
   body{margin:0;padding:16px;font-family:-apple-system,system-ui,Arial;background:#f5f5f5;}
   h1{margin-bottom:10px;}
-  .sites{margin-bottom:12px;text-align:center;}
+  .sites{margin-bottom:12px;text-align:center;position: sticky;}
 @media (max-width: 480px) {
   .sites {
     display: grid;
@@ -38,7 +38,7 @@
 <body>
 <div class="sites" id="siteIcons"></div>
 
-<div id="searchLine" style="position:relative; display:flex; align-items:center; justify-content:center; margin:8px auto 12px auto; max-width:400px; width:100%;">
+<div id="searchLine" style="position:sticky; display:flex; align-items:center; justify-content:center; margin:8px auto 12px auto; max-width:400px; width:100%;">
   <input type="search" id="titleSearch" placeholder="Search Titles..." 
     style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
   
