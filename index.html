@@ -9,7 +9,13 @@
   h1{margin-bottom:10px;}
   .sites{margin-bottom:12px;text-align:center;}
 @media (max-width: 480px) {
-  .sites { display: grid;grid-template-columns: repeat(6, 1fr);justify-items: center;gap: 6px 12px; }}
+  .sites {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    justify-items: center;
+    gap: 6px 12px;
+  }
+}
   .sites img{width:24px;height:24px;margin:0 6px;cursor:pointer;vertical-align:middle;}
   .block-title{font-weight:600;font-size:14px;margin:8px 0 8px 0;}
   .feed-list{display:grid;grid-gap:8px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}
@@ -17,16 +23,12 @@
   .feed-item img{width:12px;height:12px;vertical-align:middle;margin-right:4px;}
   .feed-item a{text-decoration:none;color:#007aff;}
   .feed-item span{color:#666;margin-left:4px;font-size:12px;}
-  #siteIcons { position: sticky; top: 0; background: #f5f5f5; z-index: 100; padding: 8px 0; border-bottom: 1px solid #ddd; height:40px; }
-  #searchLine { position: sticky; top: 40px; background: #f5f5f5; z-index: 101; padding: 8px 0; border-bottom: 1px solid #ccc; max-width: 100%; margin: 0 auto; width: 400px; box-sizing: border-box; }
-  body { padding-top: 112px; }
   .scroll-pane {
   max-height: 240px;
   overflow-y: auto;
   border: 1px solid #ddd;
   border-radius: 8px;
   background: #fff;
-  margin-top: 12px;
   margin-bottom: 8px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   padding: 0 6px;
@@ -36,10 +38,10 @@
 <body>
 <div class="sites" id="siteIcons"></div>
 
-<div id="searchLine" style="display:flex; align-items:center; justify-content:center; position:relative;">
+<div id="searchLine" style="position:relative; display:flex; align-items:center; justify-content:center; margin:8px auto 12px auto; max-width:400px; width:100%;">
   <input type="search" id="titleSearch" placeholder="Search Titles..." 
     style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
-
+  
   <div id="scrollButtons" style="position:absolute; right:4px; display:flex; gap:8px; user-select:none; font-size:20px; cursor:pointer;">
     <div id="pageDownArrow" title="Scroll one page down">⬇️</div>
     <div id="topArrow" title="Scroll to top">⏫</div>
