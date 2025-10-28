@@ -49,35 +49,23 @@
 </div>
   
 <div class="block-title">📰 Wiadomości<span class="title-actions" data-target="feedListX0">
-    <button class="act" data-action="next"  type="button">⬇️</button>
-    <button class="act" data-action="prev"  type="button">⬆️</button>
-    <button class="act" data-action="bottom" type="button">⏬</button>
-    <button class="act" data-action="top"    type="button">⏫</button></span></div>
-
+   <button class="act" data-action="next"  type="button">⬇️</button>
+   <button class="act" data-action="top"    type="button">⏫</button></span></div>
 <div class="scroll-pane"><div class="feed-list" id="feedListX0">Loading feeds…</div></div>
 
 <div class="block-title">⚽️ Sport<span class="title-actions" data-target="feedListX1">
-  <button class="act" data-action="next"  type="button">⬇️</button>
-    <button class="act" data-action="prev"  type="button">⬆️</button>
-    <button class="act" data-action="bottom" type="button">⏬</button>
-    <button class="act" data-action="top"    type="button">⏫</button></span></div>
-  
+   <button class="act" data-action="next"  type="button">⬇️</button>
+   <button class="act" data-action="top"    type="button">⏫</button></span></div>
 <div class="scroll-pane"><div class="feed-list" id="feedListX1">Loading feeds…</div></div>
 
 <div class="block-title">🖥️ Tech<span class="title-actions" data-target="feedListX2">
-    <button class="act" data-action="next"  type="button">⬇️</button>
-    <button class="act" data-action="prev"  type="button">⬆️</button>
-    <button class="act" data-action="bottom" type="button">⏬</button>
-    <button class="act" data-action="top"    type="button">⏫</button></span></div>
-
+   <button class="act" data-action="next"  type="button">⬇️</button>
+   <button class="act" data-action="top"    type="button">⏫</button></span></div>
 <div class="scroll-pane"><div class="feed-list" id="feedListX2">Loading feeds…</div></div>
 
 <div class="block-title">🌎 News<span class="title-actions" data-target="feedListX3">
-    <button class="act" data-action="next"  type="button">⬇️</button>
-    <button class="act" data-action="prev"  type="button">⬆️</button>
-    <button class="act" data-action="bottom" type="button">⏬</button>
-    <button class="act" data-action="top"    type="button">⏫</button></span></div>
-
+   <button class="act" data-action="next"  type="button">⬇️</button>
+   <button class="act" data-action="top"    type="button">⏫</button></span></div>
 <div class="scroll-pane"><div class="feed-list" id="feedListX3">Loading feeds…</div></div>
 
 <script>
@@ -186,11 +174,6 @@ function nextSection(fromPane){
   const i = sections.indexOf(fromPane);
   if(i>=0 && i<sections.length-1) scrollToElem(sections[i+1]);
 }
-function prevSection(fromPane){
-  const sections = getSections();
-  const i = sections.indexOf(fromPane);
-  if(i>0) scrollToElem(sections[i-1]);
-}
 
 // bind once for all title toolbars
 document.querySelectorAll('.title-actions').forEach(bar=>{
@@ -200,9 +183,7 @@ document.querySelectorAll('.title-actions').forEach(bar=>{
     if(!btn) return;
     const a = btn.dataset.action;
     if(a==='next') nextSection(pane);
-    else if(a==='prev') prevSection(pane);
     else if(a==='bottom') window.scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'});
-    else if(a==='top') window.scrollTo({top:0,behavior:'smooth'});
   });
 });
   
