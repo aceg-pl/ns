@@ -37,6 +37,7 @@
 </head>
 <body>
 <div class="sites" id="siteIcons"></div>
+<input type="search" id="titleSearch" placeholder="Search Titles..." style="width:100%;padding:8px;margin:8px 0 12px 0;border-radius:6px;border:1px solid #ccc;font-size:14px;box-sizing:border-box;">
 
 <div class="block-title">📰 Wiadomości</div>
 <div class="scroll-pane"><div class="feed-list" id="feedListX0">Loading feeds…</div></div>
@@ -139,6 +140,15 @@ function fetchAndRender(feeds,containerId){
     });
   });
 }
+
+const titleSearch = document.getElementById('titleSearch');
+titleSearch.addEventListener('input', () => {
+  const filter = titleSearch.value.toLowerCase();
+  document.querySelectorAll('.feed-item').forEach(item => {
+    const text = item.textContent.toLowerCase();
+    item.style.display = text.includes(filter) ? '' : 'none';
+  });
+});
 
 // Call for each block
 fetchAndRender(feedsX0,'feedListX0');
