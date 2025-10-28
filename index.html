@@ -184,6 +184,7 @@ document.querySelectorAll('.title-actions').forEach(bar=>{
     const a = btn.dataset.action;
     if(a==='next') nextSection(pane);
     else if(a==='bottom') window.scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'});
+    else if(a==='top') window.scrollTo({top:0,behavior:'smooth'});
   });
 });
   
