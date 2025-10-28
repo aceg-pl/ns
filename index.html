@@ -129,14 +129,9 @@ const feedsX3=[
 ];
 
 const feedsX4=[
-  {url:'https://wiadomosci.onet.pl/.feed', encoding:'utf-8'},
-  {url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm', encoding:'utf-8'},
-  {url:'https://www.polsatnews.pl/rss/wszystkie.xml', encoding:'utf-8'},
-  {url:'https://wiadomosci.wp.pl/rss.xml', encoding:'utf-8'},
-  {url:'https://wydarzenia.interia.pl/feed', encoding:'utf-8'}
-  // {url:'https://www.hollywoodreporter.com/feed/', encoding:'utf-8'},
-  // {url:'https://www.indiewire.com/feed/', encoding:'utf-8'},
-  // {url:'https://www.nme.com/feed', encoding:'utf-8'}
+  {url:'https://www.hollywoodreporter.com/feed/', encoding:'utf-8'},
+  {url:'https://www.indiewire.com/feed/', encoding:'utf-8'},
+  {url:'https://www.nme.com/feed', encoding:'utf-8'}
 ];
 
 const proxy='https://api.allorigins.win/get?url=';
@@ -196,7 +191,7 @@ document.getElementById('pageDownArrow').onclick = () => {
 };
 
 document.getElementById('topArrow').onclick = () => {
-  window.scrollTo({ top: 0, behavior: 'instant' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 
