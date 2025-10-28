@@ -15,6 +15,7 @@
   .sticky-header {
     position: sticky; 
     top: 0; 
+    bottom: 4;
     background: #f5f5f5; 
     padding: 16px 16px 0 16px; 
     margin: 0; 
@@ -113,7 +114,8 @@ const feedsX0=[
 ];
 
 const feedsX1=[
-  {url:'https://www.polsatsport.pl/rss/wszystkie.xml', encoding:'utf-8'}
+  {url:'https://www.polsatsport.pl/rss/wszystkie.xml', encoding:'utf-8'},
+  {url:'https://www.flashscore.com/sitemap/fsnews-sitemap-news.xml', encoding:'utf-8'}
 ];
 
 const feedsX2=[
@@ -199,7 +201,7 @@ fetchAndRender(feedsX0,'feedListX0');
 fetchAndRender(feedsX1,'feedListX1');
 fetchAndRender(feedsX2,'feedListX2');
 fetchAndRender(feedsX3,'feedListX3');
-fetchAndRender(feedsX3,'feedListX4');
+fetchAndRender(feedsX4,'feedListX4');
 </script>
 </body>
 </html>
