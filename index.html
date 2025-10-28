@@ -17,7 +17,9 @@
   }
 }
   .sites img{width:24px;height:24px;margin:0 6px;cursor:pointer;vertical-align:middle;}
-  .block-title{font-weight:600;font-size:14px;margin:8px 0 8px 0;}
+  .block-title{font-weight:600;font-size:14px;margin:8px 0 8px 0;display:flex;align-items:center;}
+  .title-actions{margin-left:auto;cursor:pointer;user-select:none;font-weight:400;font-size:16px;letter-spacing:2px;}
+  .title-actions:active{opacity:0.6;}
   .feed-list{display:grid;grid-gap:8px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}
   .feed-item{background:#fff;padding:6px;border-radius:6px;border:1px solid #ddd;overflow:hidden;font-size:13px;height:60px;}
   .feed-item img{width:12px;height:12px;vertical-align:middle;margin-right:4px;}
@@ -40,13 +42,13 @@
 <input type="search" id="titleSearch" placeholder="Search Titles..." 
   style="width:400px; max-width:100%; padding:8px; margin:8px auto 12px auto; border-radius:6px; border:1px solid #ccc; font-size:14px; box-sizing:border-box; display:block;">
 
-<div class="block-title">📰 Wiadomości</div>
+<div class="block-title">📰 Wiadomości<span class="title-actions" data-target="feedListX0">⬇️ ⬆️ ⏬ ⏫</span></div>
 <div class="scroll-pane"><div class="feed-list" id="feedListX0">Loading feeds…</div></div>
-<div class="block-title">⚽️ Sport</div>
+<div class="block-title">⚽️ Sport<span class="title-actions" data-target="feedListX1">⬇️ ⬆️ ⏬ ⏫</span></div>
 <div class="scroll-pane"><div class="feed-list" id="feedListX1">Loading feeds…</div></div>
-<div class="block-title">🖥️ Tech</div>
+<div class="block-title">🖥️ Tech<span class="title-actions" data-target="feedListX2">⬇️ ⬆️ ⏬ ⏫</span></div>
 <div class="scroll-pane"><div class="feed-list" id="feedListX2">Loading feeds…</div></div>
-<div class="block-title">🌎 News</div>
+<div class="block-title">🌎 News<span class="title-actions" data-target="feedListX3">⬇️ ⬆️ ⏬ ⏫</span></div>
 <div class="scroll-pane"><div class="feed-list" id="feedListX3">Loading feeds…</div></div>
 
 <script>
@@ -142,6 +144,39 @@ function fetchAndRender(feeds,containerId){
   });
 }
 
+function getSections(){
+return Array.from(document.querySelectorAll('.block-title')).map(t=>t.nextElementSibling).filter(Boolean);
+}
+
+function scrollToElem(el){
+if(!el)return;
+const top = el.getBoundingClientRect().top + window.pageYOffset - 6;
+window.scrollTo({top,behavior:'smooth'});
+}
+
+function nextSection(fromPane){
+const sections = getSections();
+const i = sections.indexOf(fromPane);
+if(i>=0 && i<sections.length-1) scrollToElem(sections[i+1]);
+}
+
+function prevSection(fromPane){
+const sections = getSections();
+const i = sections.indexOf(fromPane);
+if(i>0) scrollToElem(sections[i-1]);
+}
+
+document.querySelectorAll('.title-actions').forEach(span=>{
+const pane = document.getElementById(span.dataset.target)?.parentElement; // the .scroll-pane
+span.addEventListener('click', e=>{
+const text = e.target.textContent.trim();
+if(text==='⬇️') nextSection(pane);
+else if(text==='⬆️') prevSection(pane);
+else if(text==='⏬') window.scrollTo({top:document.documentElement.scrollHeight,behavior:'smooth'});
+else if(text==='⏫') window.scrollTo({top:0,behavior:'smooth'});
+});
+});
+  
 const titleSearch = document.getElementById('titleSearch');
 titleSearch.addEventListener('input', () => {
   const filter = titleSearch.value.toLowerCase();
