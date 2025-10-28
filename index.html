@@ -19,10 +19,12 @@
   .sites img{width:24px;height:24px;margin:0 6px;cursor:pointer;vertical-align:middle;}
   .block-title{font-weight:600;font-size:14px;margin:8px 0 8px 0;display:flex;align-items:center;}
   .top-controls {position: sticky;top: 0;background: #f5f5f5;z-index: 999;padding: 8px 0;height: 60px;box-sizing: border-box;}
-  body {padding-top: 0px;margin: 0;}
-  #page-scroll-controls{position:fixed;top:8px;right:8px;display:flex;gap:6px;background:#f5f5f5;border-radius:6px;padding:4px 8px;box-shadow:0 2px 6px rgba(0,0,0,0.1);z-index:10000;}
-  #page-scroll-controls .act{font:inherit;background:transparent;border:none;cursor:pointer;font-size:18px;line-height:1;padding:4px 6px;border-radius:4px;}
+  .top-controls { display:flex; align-items:center; gap:12px; position:sticky; top:0; background:#f5f5f5; padding:8px 12px; height:60px; box-sizing:border-box; }
+  #titleSearch { flex-grow:1; min-width:0; max-width:600px; }
+  #page-scroll-controls { display:flex; gap:6px; background:#f5f5f5; border-radius:6px; padding:4px 8px; box-shadow:0 2px 6px rgba(0,0,0,0.1); position:static; }
+  #page-scroll-controls .act { font:inherit; background:transparent; border:none; cursor:pointer; font-size:18px; padding:4px 6px; border-radius:4px; }
   #page-scroll-controls .act:active{background:#eee;}
+  body { margin:0; padding:60px 16px 16px; }
   .feed-list{display:grid;grid-gap:8px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}
   .feed-item{background:#fff;padding:6px;border-radius:6px;border:1px solid #ddd;overflow:hidden;font-size:13px;height:60px;}
   .feed-item img{width:12px;height:12px;vertical-align:middle;margin-right:4px;}
@@ -44,13 +46,12 @@
 
 <div class="top-controls">
   <div class="sites" id="siteIcons"></div>
-  <input type="search" id="titleSearch" placeholder="Search Titles..."
-    style="width:400px; max-width:100%; padding:8px; margin:8px auto 12px auto; border-radius:6px; border:1px solid #ccc; font-size:14px; box-sizing:border-box; display:block;">
-</div>
+  <input type="search" id="titleSearch" placeholder="Search Titles..." style="width:400px; max-width:100%; padding:8px; margin:8px auto 12px auto; border-radius:6px; border:1px solid #ccc; font-size:14px; box-sizing:border-box; display:block;">
 
-<div id="page-scroll-controls">
-  <button class="act" data-action="next" type="button">⬇️</button>
-  <button class="act" data-action="top" type="button">⏫</button>
+  <div id="page-scroll-controls">
+    <button class="act" data-action="next" type="button">⬇️</button>
+    <button class="act" data-action="top" type="button">⏫</button>
+  </div>
 </div>
 
 <div class="block-title">📰 Wiadomości</div>
