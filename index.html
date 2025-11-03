@@ -17,7 +17,7 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 <div id="searchLine" style="position:relative;display:flex;align-items:center;justify-content:center;margin:8px auto 12px auto;max-width:400px;width:100%">
 <input type="search" id="titleSearch" placeholder="Search Titles..." style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;font-size:14px;box-sizing:border-box">
 <div id="scrollButtons" style="position:absolute;right:4px;display:flex;gap:8px;user-select:none;font-size:20px;cursor:pointer">
-<div id="pageDownArrow">⬇️</div><div id="topArrow">⏫</div></div></div></div>
+<div id="pageDownArrow" title="Scroll one page down">⬇️</div><div id="topArrow" title="Scroll to top">⏫</div></div></div></div>
 
 <div class="block-title">📰 Wiadomości</div><div class="scroll-pane"><div class="feed-list" id="feedListX0">Loading…</div></div>
 <div class="block-title">⚽️ Sport</div><div class="scroll-pane"><div class="feed-list" id="feedListX1">Loading…</div></div>
@@ -27,27 +27,16 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 
 <script>
 const sites=[{url:'https://www.onet.pl',d:'onet.pl'},{url:'https://www.wp.pl',d:'wp.pl'},{url:'https://www.interia.pl',d:'interia.pl'},{url:'https://www.gazeta.pl',d:'gazeta.pl'},{url:'https://www.polsatnews.pl',d:'polsatnews.pl'},{url:'https://expressbydgoski.pl',d:'expressbydgoski.pl'},{url:'https://www.rp.pl',d:'rp.pl'},{url:'https://www.newsweek.pl/lista-wydan',d:'newsweek.pl'},{url:'https://edition.cnn.com',d:'cnn.com'},{url:'https://www.bbc.com',d:'bbc.com'},{url:'https://www.reuters.com',d:'reuters.com'},{url:'https://www.flashscore.pl',d:'flashscore.pl'}];
-const siteIcons=document.getElementById('siteIcons');
-sites.forEach(s=>{let i=document.createElement('img');i.loading='lazy';i.src=`https://www.google.com/s2/favicons?domain=${s.d}&sz=24`;i.onclick=()=>open(s.url,'_blank');siteIcons.appendChild(i);});
-
-const feedsX0=[{url:'https://wiadomosci.onet.pl/.feed'},{url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm',fix:1},{url:'https://www.polsatnews.pl/rss/wszystkie.xml'},{url:'https://wiadomosci.wp.pl/rss.xml'},{url:'https://wydarzenia.interia.pl/feed'}];
+const siteIcons=document.getElementById('siteIcons');sites.forEach(s=>{let i=document.createElement('img');i.loading='lazy';i.src=`https://www.google.com/s2/favicons?domain=${s.d}&sz=24`;i.onclick=()=>open(s.url,'_blank');siteIcons.appendChild(i)});
+const feedsX0=[{url:'https://wiadomosci.onet.pl/.feed'},{url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm'},{url:'https://www.polsatnews.pl/rss/wszystkie.xml'},{url:'https://wiadomosci.wp.pl/rss.xml'},{url:'https://wydarzenia.interia.pl/feed'}];
 const feedsX1=[{url:'https://www.polsatsport.pl/rss/wszystkie.xml'},{url:'https://www.soccernews.com/category/la-liga/feed/'}];
 const feedsX2=[{url:'https://www.theverge.com/rss/index.xml'},{url:'https://www.wired.com/feed/rss'},{url:'https://www.sciencedaily.com/rss/top.xml'}];
 const feedsX3=[{url:'http://rss.cnn.com/rss/cnn_topstories.rss'},{url:'https://feeds.bbci.co.uk/news/rss.xml'}];
 const feedsX4=[{url:'https://eol-feeds.eonline.com/rssfeed/us/top_stories'},{url:'https://www.ign.com/rss/articles/feed'}];
-const proxy='https://api.allorigins.win/get?url=';
+const proxy1='https://api.allorigins.win/get?url=',proxy2='https://api.codetabs.com/v1/proxy?quest=';
 
-function fixPolish(str){
- return str.replace(/Ã³/g,'ó').replace(/Ã/g,'Ą').replace(/Â/g,'').replace(/Ã±/g,'ń').replace(/Ã¦/g,'ć').replace(/Ã/g,'ł').replace(/Ã¼/g,'ü');
-}
-
-function fR(f,r=1){
- return fetch(proxy+encodeURIComponent(f.url)).then(x=>x.json()).then(d=>{
-   let t=d.contents;
-   if(f.fix)t=fixPolish(t);
-   return {ok:1,t};
- }).catch(_=>r?new Promise(res=>setTimeout(()=>res(fR(f,r-1)),1000)):{ok:0,t:''});
-}
+function fR(f,r=1){return fetch(proxy1+encodeURIComponent(f.url)).then(x=>x.json()).then(d=>({ok:1,t:d.contents})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''})}
+function fRalt(f,r=1){return fetch(proxy2+encodeURIComponent(f.url)).then(x=>x.text()).then(t=>({ok:1,t})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''})}
 
 function fNR(feeds,id,page=0){
  let el=document.getElementById(id);if(page===0)el.innerHTML='';
@@ -58,6 +47,7 @@ function fNR(feeds,id,page=0){
      let t=e.querySelector('title')?.textContent||'No title',
          l=e.querySelector('link')?.textContent||e.querySelector('link')?.getAttribute('href')||'#',
          d=e.querySelector('pubDate')?.textContent||e.querySelector('updated')?.textContent||new Date().toISOString();
+     if(f.url.includes('gazeta.pl'))t=t.replace(/�/g,'ó');
      return {t,l,d:new Date(d)};
    });
  }))).then(all=>{
@@ -70,9 +60,7 @@ function fNR(feeds,id,page=0){
      a.appendChild(im);a.appendChild(document.createTextNode(' '+n.t.slice(0,80)+(n.t.length>80?'…':'')));a.appendChild(sp);
      el.appendChild(a);
    });
-   if(items.length>(page+1)*20){
-     let btn=document.createElement('button');btn.textContent='Load more';btn.className='loadmore';btn.onclick=()=>{btn.remove();fNR(feeds,id,page+1)};el.after(btn);
-   }
+   if(items.length>(page+1)*20){let btn=document.createElement('button');btn.textContent='Load more';btn.className='loadmore';btn.onclick=()=>{btn.remove();fNR(feeds,id,page+1)};el.after(btn);}
  });
 }
 
