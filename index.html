@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>News Portal</title><style>
 body{margin:0;padding:0;font-family:-apple-system,system-ui,Arial;background:#f5f5f5}
 .sticky-header{position:sticky;top:0;background:#f5f5f5;padding:16px 16px 0;margin:0;z-index:100;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
-h1{margin-bottom:10px}.sites{margin-bottom:12px;text-align:center}
+.sites{margin-bottom:12px;text-align:center}
 @media(max-width:480px){.sites{display:grid;grid-template-columns:repeat(6,1fr);justify-items:center;gap:6px 12px}}
 .sites img{width:24px;height:24px;margin:0 6px;cursor:pointer;vertical-align:middle}
 .block-title{font-weight:600;font-size:14px;margin:8px 0;padding-left:16px}
@@ -17,8 +17,7 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 <div id="searchLine" style="position:relative;display:flex;align-items:center;justify-content:center;margin:8px auto 12px auto;max-width:400px;width:100%">
 <input type="search" id="titleSearch" placeholder="Search Titles..." style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;font-size:14px;box-sizing:border-box">
 <div id="scrollButtons" style="position:absolute;right:4px;display:flex;gap:8px;user-select:none;font-size:20px;cursor:pointer">
-<div id="pageDownArrow" title="Scroll one page down">⬇️</div>
-<div id="topArrow" title="Scroll to top">⏫</div></div></div></div>
+<div id="pageDownArrow">⬇️</div><div id="topArrow">⏫</div></div></div></div>
 
 <div class="block-title">📰 Wiadomości</div><div class="scroll-pane"><div class="feed-list" id="feedListX0">Loading…</div></div>
 <div class="block-title">⚽️ Sport</div><div class="scroll-pane"><div class="feed-list" id="feedListX1">Loading…</div></div>
@@ -30,16 +29,26 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 const sites=[{url:'https://www.onet.pl',d:'onet.pl'},{url:'https://www.wp.pl',d:'wp.pl'},{url:'https://www.interia.pl',d:'interia.pl'},{url:'https://www.gazeta.pl',d:'gazeta.pl'},{url:'https://www.polsatnews.pl',d:'polsatnews.pl'},{url:'https://expressbydgoski.pl',d:'expressbydgoski.pl'},{url:'https://www.rp.pl',d:'rp.pl'},{url:'https://www.newsweek.pl/lista-wydan',d:'newsweek.pl'},{url:'https://edition.cnn.com',d:'cnn.com'},{url:'https://www.bbc.com',d:'bbc.com'},{url:'https://www.reuters.com',d:'reuters.com'},{url:'https://www.flashscore.pl',d:'flashscore.pl'}];
 const siteIcons=document.getElementById('siteIcons');
 sites.forEach(s=>{let i=document.createElement('img');i.loading='lazy';i.src=`https://www.google.com/s2/favicons?domain=${s.d}&sz=24`;i.onclick=()=>open(s.url,'_blank');siteIcons.appendChild(i);});
-const feedsX0=[{url:'https://wiadomosci.onet.pl/.feed'},{url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm'},{url:'https://www.polsatnews.pl/rss/wszystkie.xml'},{url:'https://wiadomosci.wp.pl/rss.xml'},{url:'https://wydarzenia.interia.pl/feed'}];
+const feedsX0=[{url:'https://wiadomosci.onet.pl/.feed'},{url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm',fix:1},{url:'https://www.polsatnews.pl/rss/wszystkie.xml'},{url:'https://wiadomosci.wp.pl/rss.xml'},{url:'https://wydarzenia.interia.pl/feed'}];
 const feedsX1=[{url:'https://www.polsatsport.pl/rss/wszystkie.xml'},{url:'https://www.soccernews.com/category/la-liga/feed/'}];
 const feedsX2=[{url:'https://www.theverge.com/rss/index.xml'},{url:'https://www.wired.com/feed/rss'},{url:'https://www.sciencedaily.com/rss/top.xml'}];
 const feedsX3=[{url:'http://rss.cnn.com/rss/cnn_topstories.rss'},{url:'https://feeds.bbci.co.uk/news/rss.xml'}];
 const feedsX4=[{url:'https://eol-feeds.eonline.com/rssfeed/us/top_stories'},{url:'https://www.ign.com/rss/articles/feed'}];
 const proxy1='https://api.allorigins.win/get?url=',proxy2='https://api.codetabs.com/v1/proxy?quest=';
 
-function fR(f,r=1){return fetch(proxy1+encodeURIComponent(f.url)).then(x=>x.json()).then(d=>({ok:1,t:d.contents})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''})}
-function fRalt(f,r=1){return fetch(proxy2+encodeURIComponent(f.url)).then(x=>x.text()).then(t=>({ok:1,t})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''})}
+// --- encoding-safe fetch ---
+function fixPolish(str){
+ return str.replace(/Ã³/g,'ó').replace(/Ã/g,'Ą').replace(/Â/g,'').replace(/Ã±/g,'ń').replace(/Ã¦/g,'ć').replace(/Ã/g,'ł').replace(/Ã¼/g,'ü');
+}
+function fR(f,r=1){
+ return fetch(proxy1+encodeURIComponent(f.url)).then(x=>x.text()).then(t=>{
+   if(f.fix)t=fixPolish(t);
+   return {ok:1,t};
+ }).catch(_=>r?fRalt(f,r-1):{ok:0,t:''});
+}
+function fRalt(f,r=1){return fetch(proxy2+encodeURIComponent(f.url)).then(x=>x.text()).then(t=>({ok:1,t:f.fix?fixPolish(t):t})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''})}
 
+// --- global sort + pagination ---
 function fNR(feeds,id,page=0){
  let el=document.getElementById(id);if(page===0)el.innerHTML='';
  Promise.all(feeds.map(f=>fR(f,1).then(r=>{
@@ -52,7 +61,7 @@ function fNR(feeds,id,page=0){
      return {t,l,d:new Date(d)};
    });
  }))).then(all=>{
-   let items=all.flat().sort((a,b)=>b.d-a.d); // global chronological sort
+   let items=all.flat().sort((a,b)=>b.d-a.d);
    items.slice(page*20,(page+1)*20).forEach(n=>{
      let a=document.createElement('a');a.href=n.l;a.target='_blank';a.className='feed-item';
      let im=document.createElement('img');im.loading='lazy';im.src=`https://www.google.com/s2/favicons?domain=${new URL(n.l).hostname}&sz=16`;
@@ -62,17 +71,13 @@ function fNR(feeds,id,page=0){
      el.appendChild(a);
    });
    if(items.length>(page+1)*20){
-     let btn=document.createElement('button');
-     btn.textContent='Load more';btn.className='loadmore';
-     btn.onclick=()=>{btn.remove();fNR(feeds,id,page+1)};
-     el.after(btn);
+     let btn=document.createElement('button');btn.textContent='Load more';btn.className='loadmore';btn.onclick=()=>{btn.remove();fNR(feeds,id,page+1)};el.after(btn);
    }
  });
 }
 
 titleSearch.oninput=()=>{let f=titleSearch.value.toLowerCase();document.querySelectorAll('.feed-item').forEach(x=>x.style.display=x.textContent.toLowerCase().includes(f)?'':'none')};
-pageDownArrow.onclick=()=>scrollBy({top:innerHeight,behavior:'smooth'});
-topArrow.onclick=()=>scrollTo({top:0,behavior:'smooth'});
+pageDownArrow.onclick=()=>scrollBy({top:innerHeight,behavior:'smooth'});topArrow.onclick=()=>scrollTo({top:0,behavior:'smooth'});
 
 function loadSeq(){fNR(feedsX0,'feedListX0');setTimeout(()=>fNR(feedsX1,'feedListX1'),400);setTimeout(()=>fNR(feedsX2,'feedListX2'),800);setTimeout(()=>fNR(feedsX3,'feedListX3'),1200);setTimeout(()=>fNR(feedsX4,'feedListX4'),1600);}
 loadSeq();
