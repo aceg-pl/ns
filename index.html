@@ -1,204 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>News Portal</title>
-<style>
-  body{
-    margin:0;
-    padding:0; 
-    font-family:-apple-system,system-ui,Arial;
-    background:#f5f5f5;
-  }
-  
-  .sticky-header {
-    position: sticky; 
-    top: 0; 
-    background: #f5f5f5; 
-    padding: 16px 16px 0 16px; 
-    margin: 0; 
-    z-index: 100; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
-  }
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>News Portal</title><style>
+body{margin:0;padding:0;font-family:-apple-system,system-ui,Arial;background:#f5f5f5}
+.sticky-header{position:sticky;top:0;background:#f5f5f5;padding:16px 16px 0;margin:0;z-index:100;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
+h1{margin-bottom:10px}.sites{margin-bottom:12px;text-align:center}
+@media(max-width:480px){.sites{display:grid;grid-template-columns:repeat(6,1fr);justify-items:center;gap:6px 12px}}
+.sites img{width:24px;height:24px;margin:0 6px;cursor:pointer;vertical-align:middle}
+.block-title{font-weight:600;font-size:14px;margin:8px 0;padding-left:16px}
+.feed-list{display:grid;grid-gap:8px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.feed-item{background:#fff;padding:6px;border-radius:6px;border:1px solid #ddd;overflow:hidden;font-size:13px;height:60px}
+.feed-item img{width:12px;height:12px;vertical-align:middle;margin-right:4px}
+.feed-item a{text-decoration:none;color:#007aff}
+.feed-item span{color:#666;margin-left:4px;font-size:12px}
+.scroll-pane{max-height:240px;overflow-y:auto;border:1px solid #ddd;border-radius:8px;background:#fff;margin:0 16px 8px 16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);padding:0 6px}
+button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
+</style></head><body>
+<div class="sticky-header"><div class="sites" id="siteIcons"></div>
+<div id="searchLine" style="position:relative;display:flex;align-items:center;justify-content:center;margin:8px auto 12px auto;max-width:400px;width:100%">
+<input type="search" id="titleSearch" placeholder="Search Titles..." style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;font-size:14px;box-sizing:border-box">
+<div id="scrollButtons" style="position:absolute;right:4px;display:flex;gap:8px;user-select:none;font-size:20px;cursor:pointer">
+<div id="pageDownArrow" title="Scroll one page down">⬇️</div>
+<div id="topArrow" title="Scroll to top">⏫</div></div></div></div>
 
-  h1{margin-bottom:10px;}
-  .sites{margin-bottom:12px;text-align:center;}
-@media (max-width: 480px) {
-  .sites {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    justify-items: center;
-    gap: 6px 12px;
-  }
-}
-  .sites img{width:24px;height:24px;margin:0 6px;cursor:pointer;vertical-align:middle;}
-  .block-title{font-weight:600;font-size:14px;margin:8px 0 8px 0; padding-left: 16px;}
-  .feed-list{display:grid;grid-gap:8px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}
-  .feed-item{background:#fff;padding:6px;border-radius:6px;border:1px solid #ddd;overflow:hidden;font-size:13px;height:60px;}
-  .feed-item img{width:12px;height:12px;vertical-align:middle;margin-right:4px;}
-  .feed-item a{text-decoration:none;color:#007aff;}
-  .feed-item span{color:#666;margin-left:4px;font-size:12px;}
-  .scroll-pane {
-  max-height: 240px;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fff;
-  margin: 0 16px 8px 16px; 
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-  padding: 0 6px;
-     }
-</style>
-</head>
-<body>
-
-<div class="sticky-header">
-  <div class="sites" id="siteIcons"></div>
-
-  <div id="searchLine" style="position:relative; display:flex; align-items:center; justify-content:center; margin:8px auto 12px auto; max-width:400px; width:100%;">
-    <input type="search" id="titleSearch" placeholder="Search Titles..." 
-      style="width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; font-size:14px; box-sizing:border-box;">
-    
-    <div id="scrollButtons" style="position:absolute; right:4px; display:flex; gap:8px; user-select:none; font-size:20px; cursor:pointer;">
-      <div id="pageDownArrow" title="Scroll one page down">⬇️</div>
-      <div id="topArrow" title="Scroll to top">⏫</div>
-    </div>
-  </div>
-</div>
-
-
-<div class="block-title">📰 Wiadomości</div>
-<div class="scroll-pane"><div class="feed-list" id="feedListX0">Loading feeds…</div></div>
-<div class="block-title">⚽️ Sport</div>
-<div class="scroll-pane"><div class="feed-list" id="feedListX1">Loading feeds…</div></div>
-<div class="block-title">🖥️ Tech</div>
-<div class="scroll-pane"><div class="feed-list" id="feedListX2">Loading feeds…</div></div>
-<div class="block-title">🌎 News</div>
-<div class="scroll-pane"><div class="feed-list" id="feedListX3">Loading feeds…</div></div>
-<div class="block-title">🎬 AV</div>
-<div class="scroll-pane"><div class="feed-list" id="feedListX4">Loading feeds…</div></div>
+<div class="block-title">📰 Wiadomości</div><div class="scroll-pane"><div class="feed-list" id="feedListX0">Loading…</div></div>
+<div class="block-title">⚽️ Sport</div><div class="scroll-pane"><div class="feed-list" id="feedListX1">Loading…</div></div>
+<div class="block-title">🖥️ Tech</div><div class="scroll-pane"><div class="feed-list" id="feedListX2">Loading…</div></div>
+<div class="block-title">🌎 News</div><div class="scroll-pane"><div class="feed-list" id="feedListX3">Loading…</div></div>
+<div class="block-title">🎬 AV</div><div class="scroll-pane"><div class="feed-list" id="feedListX4">Loading…</div></div>
 
 <script>
-
-const sites=[
-  {url:'https://www.onet.pl', domain:'onet.pl'},
-  {url:'https://www.wp.pl', domain:'wp.pl'},
-  {url:'https://www.interia.pl', domain:'interia.pl'},
-  {url:'https://www.gazeta.pl', domain:'gazeta.pl'},
-  {url:'https://www.polsatnews.pl', domain:'polsatnews.pl'},
-  {url:'https://expressbydgoski.pl', domain:'expressbydgoski.pl'},
-  {url:'https://www.rp.pl', domain:'rp.pl'},
-  {url:'https://www.newsweek.pl/lista-wydan', domain:'newsweek.pl'},
-  {url:'https://edition.cnn.com', domain:'cnn.com'},
-  {url:'https://www.bbc.com', domain:'bbc.com'},
-  {url:'https://www.reuters.com', domain:'reuters.com'},
-  {url:'https://www.flashscore.pl', domain:'flashscore.pl'}
-];
-
+const sites=[{url:'https://www.onet.pl',d:'onet.pl'},{url:'https://www.wp.pl',d:'wp.pl'},{url:'https://www.interia.pl',d:'interia.pl'},{url:'https://www.gazeta.pl',d:'gazeta.pl'},{url:'https://www.polsatnews.pl',d:'polsatnews.pl'},{url:'https://expressbydgoski.pl',d:'expressbydgoski.pl'},{url:'https://www.rp.pl',d:'rp.pl'},{url:'https://www.newsweek.pl/lista-wydan',d:'newsweek.pl'},{url:'https://edition.cnn.com',d:'cnn.com'},{url:'https://www.bbc.com',d:'bbc.com'},{url:'https://www.reuters.com',d:'reuters.com'},{url:'https://www.flashscore.pl',d:'flashscore.pl'}];
 const siteIcons=document.getElementById('siteIcons');
-sites.forEach(site=>{
-  const img=document.createElement('img');
-  img.src=`https://www.google.com/s2/favicons?domain=${site.domain}&sz=24`;
-  img.onclick=()=>window.open(site.url,'_blank');
-  siteIcons.appendChild(img);
-});
+sites.forEach(s=>{let i=document.createElement('img');i.loading='lazy';i.src=`https://www.google.com/s2/favicons?domain=${s.d}&sz=24`;i.onclick=()=>open(s.url,'_blank');siteIcons.appendChild(i);});
 
-const feedsX0=[
-  {url:'https://wiadomosci.onet.pl/.feed', encoding:'utf-8'},
-  {url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm', encoding:'utf-8'},
-  {url:'https://www.polsatnews.pl/rss/wszystkie.xml', encoding:'utf-8'},
-  {url:'https://wiadomosci.wp.pl/rss.xml', encoding:'utf-8'},
-  {url:'https://wydarzenia.interia.pl/feed', encoding:'utf-8'}
-];
+const feedsX0=[{url:'https://wiadomosci.onet.pl/.feed'},{url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm'},{url:'https://www.polsatnews.pl/rss/wszystkie.xml'},{url:'https://wiadomosci.wp.pl/rss.xml'},{url:'https://wydarzenia.interia.pl/feed'}];
+const feedsX1=[{url:'https://www.polsatsport.pl/rss/wszystkie.xml'},{url:'https://www.soccernews.com/category/la-liga/feed/'}];
+const feedsX2=[{url:'https://www.theverge.com/rss/index.xml'},{url:'https://www.wired.com/feed/rss'},{url:'https://www.sciencedaily.com/rss/top.xml'}];
+const feedsX3=[{url:'http://rss.cnn.com/rss/cnn_topstories.rss'},{url:'https://feeds.bbci.co.uk/news/rss.xml'}];
+const feedsX4=[{url:'https://eol-feeds.eonline.com/rssfeed/us/top_stories'},{url:'https://www.ign.com/rss/articles/feed'}];
+const proxy1='https://api.allorigins.win/get?url=',proxy2='https://api.codetabs.com/v1/proxy?quest=';
 
-const feedsX1=[
-  {url:'https://www.polsatsport.pl/rss/wszystkie.xml', encoding:'utf-8'},
-  {url:'https://www.soccernews.com/category/la-liga/feed/', encoding:'utf-8'}
-];
-
-const feedsX2=[
-  {url:'https://www.theverge.com/rss/index.xml', encoding:'utf-8'},
-  {url:'https://www.wired.com/feed/rss', encoding:'utf-8'},
-  {url:'https://www.sciencedaily.com/rss/top.xml', encoding:'utf-8'}
-];
-
-const feedsX3=[
-  {url:'http://rss.cnn.com/rss/cnn_topstories.rss', encoding:'utf-8'},
-  {url:'https://feeds.bbci.co.uk/news/rss.xml', encoding:'utf-8'}
-];
-
-const feedsX4=[
-  {url:'https://eol-feeds.eonline.com/rssfeed/us/top_stories', encoding:'utf-8'},
-  {url:'https://www.ign.com/rss/articles/feed', encoding:'utf-8'}
-];
-
-const proxy='https://api.allorigins.win/get?url=';
-
-function fetchWithRetry(feed,retries){
-  return (feed.encoding==='windows-1250'
-    ? fetch(proxy+encodeURIComponent(feed.url)).then(r=>r.arrayBuffer()).then(buf=>{
-        const dec=new TextDecoder('windows-1250');
-        const text=dec.decode(buf);
-        return {success:1,text};
-      })
-    : fetch(proxy+encodeURIComponent(feed.url)).then(r=>r.json()).then(data=>{
-        return {success:1,text:data.contents};
-      })
-  ).catch(_=>{
-    if(retries>0)return new Promise(res=>setTimeout(()=>res(fetchWithRetry(feed,retries-1)),2000));
-    return {success:0,text:''};
-  });
+function fR(f,r=1){
+ return fetch(proxy1+encodeURIComponent(f.url)).then(x=>x.json()).then(d=>({ok:1,t:d.contents})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''});
 }
-function fetchAndRender(feeds,containerId){
-  const feedList=document.getElementById(containerId),items=[];
-  Promise.all(feeds.map(feed=>fetchWithRetry(feed,1).then(res=>{
-    if(!res.success){items.push({title:'Feed error',link:'#',date:new Date().toISOString()});return;}
-    const parser=new DOMParser(),xml=parser.parseFromString(res.text,"application/xml");
-    Array.from(xml.querySelectorAll("item,entry")).forEach(e=>{
-      items.push({title:e.querySelector("title")?.textContent||"No title",link:e.querySelector("link")?.textContent||e.querySelector("link")?.getAttribute("href")||"#",date:e.querySelector("pubDate")?.textContent||e.querySelector("updated")?.textContent||new Date().toISOString()});
-    });
-  }))).then(()=>{
-    items.sort((a,b)=>new Date(b.date)-new Date(a.date));
-    feedList.innerHTML='';
-    items.slice(0,100).forEach(e=>{
-      const entry=document.createElement('div');
-      entry.className='feed-item';
-      const a=document.createElement('a'); a.href=e.link;a.target='_blank';
-      const img=document.createElement('img'); img.src=`https://www.google.com/s2/favicons?domain=${new URL(e.link).hostname}&sz=16`;
-      let tText=e.title.split(' ').slice(0,14).join(' ');if(e.title.split(' ').length>14)tText+='…';
-      const span=document.createElement('span');
-      const r=new Date(e.date),d=new Date();
-      span.textContent=' '+((d-r)/36e5<24?`${String(r.getHours()).padStart(2,'0')}:${String(r.getMinutes()).padStart(2,'0')}`:`${String(r.getDate()).padStart(2,'0')}/${String(r.getMonth()+1).padStart(2,'0')}`);
-      a.appendChild(img);a.appendChild(document.createTextNode(tText));a.appendChild(span);
-      entry.appendChild(a);feedList.appendChild(entry);
-    });
-  });
+function fRalt(f,r=1){
+ return fetch(proxy2+encodeURIComponent(f.url)).then(x=>x.text()).then(t=>({ok:1,t})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''});
 }
 
-const titleSearch = document.getElementById('titleSearch');
-titleSearch.addEventListener('input', () => {
-  const filter = titleSearch.value.toLowerCase();
-  document.querySelectorAll('.feed-item').forEach(item => {
-    const text = item.textContent.toLowerCase();
-    item.style.display = text.includes(filter) ? '' : 'none';
-  });
-});
+function fNR(feeds,id,page=0){
+ let el=document.getElementById(id);el.innerHTML='';feeds.forEach(f=>{
+   fR(f,1).then(r=>{
+     if(!r.ok)return;
+     let p=new DOMParser(),x=p.parseFromString(r.t,'application/xml');
+     let arr=Array.from(x.querySelectorAll('item,entry')).slice(0,20);
+     arr.forEach(e=>{
+       let t=e.querySelector('title')?.textContent||'No title',
+           l=e.querySelector('link')?.textContent||e.querySelector('link')?.getAttribute('href')||'#',
+           d=e.querySelector('pubDate')?.textContent||e.querySelector('updated')?.textContent||new Date().toISOString(),
+           a=document.createElement('a');a.href=l;a.target='_blank';a.className='feed-item';
+       let im=document.createElement('img');im.loading='lazy';im.src=`https://www.google.com/s2/favicons?domain=${new URL(l).hostname}&sz=16`;
+       let sp=document.createElement('span'),rD=new Date(d),nD=new Date();
+       sp.textContent=' '+((nD-rD)/36e5<24?`${String(rD.getHours()).padStart(2,'0')}:${String(rD.getMinutes()).padStart(2,'0')}`:`${String(rD.getDate()).padStart(2,'0')}/${String(rD.getMonth()+1).padStart(2,'0')}`);
+       a.appendChild(im);a.appendChild(document.createTextNode(' '+t.slice(0,80)+(t.length>80?'…':'')));a.appendChild(sp);
+       el.appendChild(a);
+     });
+   });
+ });
+ let btn=document.createElement('button');btn.textContent='Load more';btn.className='loadmore';
+ btn.onclick=()=>{btn.remove();fNR(feeds,id,page+1);};el.after(btn);
+}
 
-document.getElementById('pageDownArrow').onclick = () => {
-  window.scrollBy({ top: window.innerHeight, behavior: 'smooth' });
+document.getElementById('titleSearch').oninput=()=>{
+ let f=titleSearch.value.toLowerCase();document.querySelectorAll('.feed-item').forEach(x=>x.style.display=x.textContent.toLowerCase().includes(f)?'':'none');
 };
+pageDownArrow.onclick=()=>scrollBy({top:innerHeight,behavior:'smooth'});
+topArrow.onclick=()=>scrollTo({top:0,behavior:'smooth'});
 
-document.getElementById('topArrow').onclick = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-
-
-fetchAndRender(feedsX0,'feedListX0');
-fetchAndRender(feedsX1,'feedListX1');
-fetchAndRender(feedsX2,'feedListX2');
-fetchAndRender(feedsX3,'feedListX3');
-fetchAndRender(feedsX4,'feedListX4');
-</script>
-</body>
-</html>
+async function loadSeq(){
+ fNR(feedsX0,'feedListX0');
+ setTimeout(()=>fNR(feedsX1,'feedListX1'),400);
+ setTimeout(()=>fNR(feedsX2,'feedListX2'),800);
+ setTimeout(()=>fNR(feedsX3,'feedListX3'),1200);
+ setTimeout(()=>fNR(feedsX4,'feedListX4'),1600);
+}
+loadSeq();
+</script></body></html>
