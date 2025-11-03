@@ -30,7 +30,6 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 const sites=[{url:'https://www.onet.pl',d:'onet.pl'},{url:'https://www.wp.pl',d:'wp.pl'},{url:'https://www.interia.pl',d:'interia.pl'},{url:'https://www.gazeta.pl',d:'gazeta.pl'},{url:'https://www.polsatnews.pl',d:'polsatnews.pl'},{url:'https://expressbydgoski.pl',d:'expressbydgoski.pl'},{url:'https://www.rp.pl',d:'rp.pl'},{url:'https://www.newsweek.pl/lista-wydan',d:'newsweek.pl'},{url:'https://edition.cnn.com',d:'cnn.com'},{url:'https://www.bbc.com',d:'bbc.com'},{url:'https://www.reuters.com',d:'reuters.com'},{url:'https://www.flashscore.pl',d:'flashscore.pl'}];
 const siteIcons=document.getElementById('siteIcons');
 sites.forEach(s=>{let i=document.createElement('img');i.loading='lazy';i.src=`https://www.google.com/s2/favicons?domain=${s.d}&sz=24`;i.onclick=()=>open(s.url,'_blank');siteIcons.appendChild(i);});
-
 const feedsX0=[{url:'https://wiadomosci.onet.pl/.feed'},{url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm'},{url:'https://www.polsatnews.pl/rss/wszystkie.xml'},{url:'https://wiadomosci.wp.pl/rss.xml'},{url:'https://wydarzenia.interia.pl/feed'}];
 const feedsX1=[{url:'https://www.polsatsport.pl/rss/wszystkie.xml'},{url:'https://www.soccernews.com/category/la-liga/feed/'}];
 const feedsX2=[{url:'https://www.theverge.com/rss/index.xml'},{url:'https://www.wired.com/feed/rss'},{url:'https://www.sciencedaily.com/rss/top.xml'}];
@@ -38,48 +37,36 @@ const feedsX3=[{url:'http://rss.cnn.com/rss/cnn_topstories.rss'},{url:'https://f
 const feedsX4=[{url:'https://eol-feeds.eonline.com/rssfeed/us/top_stories'},{url:'https://www.ign.com/rss/articles/feed'}];
 const proxy1='https://api.allorigins.win/get?url=',proxy2='https://api.codetabs.com/v1/proxy?quest=';
 
-function fR(f,r=1){
- return fetch(proxy1+encodeURIComponent(f.url)).then(x=>x.json()).then(d=>({ok:1,t:d.contents})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''});
-}
-function fRalt(f,r=1){
- return fetch(proxy2+encodeURIComponent(f.url)).then(x=>x.text()).then(t=>({ok:1,t})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''});
-}
+function fR(f,r=1){return fetch(proxy1+encodeURIComponent(f.url)).then(x=>x.json()).then(d=>({ok:1,t:d.contents})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''})}
+function fRalt(f,r=1){return fetch(proxy2+encodeURIComponent(f.url)).then(x=>x.text()).then(t=>({ok:1,t})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''})}
 
 function fNR(feeds,id,page=0){
- let el=document.getElementById(id);el.innerHTML='';feeds.forEach(f=>{
-   fR(f,1).then(r=>{
-     if(!r.ok)return;
-     let p=new DOMParser(),x=p.parseFromString(r.t,'application/xml');
-     let arr=Array.from(x.querySelectorAll('item,entry')).slice(0,20);
-     arr.forEach(e=>{
-       let t=e.querySelector('title')?.textContent||'No title',
-           l=e.querySelector('link')?.textContent||e.querySelector('link')?.getAttribute('href')||'#',
-           d=e.querySelector('pubDate')?.textContent||e.querySelector('updated')?.textContent||new Date().toISOString(),
-           a=document.createElement('a');a.href=l;a.target='_blank';a.className='feed-item';
-       let im=document.createElement('img');im.loading='lazy';im.src=`https://www.google.com/s2/favicons?domain=${new URL(l).hostname}&sz=16`;
-       let sp=document.createElement('span'),rD=new Date(d),nD=new Date();
-       sp.textContent=' '+((nD-rD)/36e5<24?`${String(rD.getHours()).padStart(2,'0')}:${String(rD.getMinutes()).padStart(2,'0')}`:`${String(rD.getDate()).padStart(2,'0')}/${String(rD.getMonth()+1).padStart(2,'0')}`);
-       a.appendChild(im);a.appendChild(document.createTextNode(' '+t.slice(0,80)+(t.length>80?'…':'')));a.appendChild(sp);
-       el.appendChild(a);
-     });
+ let el=document.getElementById(id);if(page===0)el.innerHTML='';
+ Promise.all(feeds.map(f=>fR(f,1).then(r=>{
+   if(!r.ok)return[];
+   let p=new DOMParser(),x=p.parseFromString(r.t,'application/xml');
+   return Array.from(x.querySelectorAll('item,entry')).map(e=>{
+     let t=e.querySelector('title')?.textContent||'No title',
+         l=e.querySelector('link')?.textContent||e.querySelector('link')?.getAttribute('href')||'#',
+         d=e.querySelector('pubDate')?.textContent||e.querySelector('updated')?.textContent||new Date().toISOString();
+     return {t,l,d:new Date(d)};
    });
+ }))).then(r=>{
+   r.flat().sort((a,b)=>b.d-a.d).slice(page*20,(page+1)*20).forEach(n=>{
+     let a=document.createElement('a');a.href=n.l;a.target='_blank';a.className='feed-item';
+     let im=document.createElement('img');im.loading='lazy';im.src=`https://www.google.com/s2/favicons?domain=${new URL(n.l).hostname}&sz=16`;
+     let sp=document.createElement('span'),rD=n.d,nD=new Date();
+     sp.textContent=' '+((nD-rD)/36e5<24?`${String(rD.getHours()).padStart(2,'0')}:${String(rD.getMinutes()).padStart(2,'0')}`:`${String(rD.getDate()).padStart(2,'0')}/${String(rD.getMonth()+1).padStart(2,'0')}`);
+     a.appendChild(im);a.appendChild(document.createTextNode(' '+n.t.slice(0,80)+(n.t.length>80?'…':'')));a.appendChild(sp);el.appendChild(a);
+   });
+   let btn=document.createElement('button');btn.textContent='Load more';btn.className='loadmore';btn.onclick=()=>{btn.remove();fNR(feeds,id,page+1)};el.after(btn);
  });
- let btn=document.createElement('button');btn.textContent='Load more';btn.className='loadmore';
- btn.onclick=()=>{btn.remove();fNR(feeds,id,page+1);};el.after(btn);
 }
 
-document.getElementById('titleSearch').oninput=()=>{
- let f=titleSearch.value.toLowerCase();document.querySelectorAll('.feed-item').forEach(x=>x.style.display=x.textContent.toLowerCase().includes(f)?'':'none');
-};
+titleSearch.oninput=()=>{let f=titleSearch.value.toLowerCase();document.querySelectorAll('.feed-item').forEach(x=>x.style.display=x.textContent.toLowerCase().includes(f)?'':'none')};
 pageDownArrow.onclick=()=>scrollBy({top:innerHeight,behavior:'smooth'});
 topArrow.onclick=()=>scrollTo({top:0,behavior:'smooth'});
 
-async function loadSeq(){
- fNR(feedsX0,'feedListX0');
- setTimeout(()=>fNR(feedsX1,'feedListX1'),400);
- setTimeout(()=>fNR(feedsX2,'feedListX2'),800);
- setTimeout(()=>fNR(feedsX3,'feedListX3'),1200);
- setTimeout(()=>fNR(feedsX4,'feedListX4'),1600);
-}
+function loadSeq(){fNR(feedsX0,'feedListX0');setTimeout(()=>fNR(feedsX1,'feedListX1'),400);setTimeout(()=>fNR(feedsX2,'feedListX2'),800);setTimeout(()=>fNR(feedsX3,'feedListX3'),1200);setTimeout(()=>fNR(feedsX4,'feedListX4'),1600);}
 loadSeq();
 </script></body></html>
