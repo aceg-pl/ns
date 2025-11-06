@@ -12,6 +12,11 @@ h1{margin-bottom:10px}.sites{margin-bottom:12px;text-align:center}
 .feed-item span{color:#666;margin-left:4px;font-size:12px}
 .scroll-pane{max-height:240px;overflow-y:auto;border:1px solid #ddd;border-radius:8px;background:#fff;margin:0 16px 8px 16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);padding:0 6px}
 button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
+#datebar{background:#111827;color:#F9FAFB;font:15px/1.35 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial;border:1px solid #374151;border-radius:8px;margin:4px 16px 10px;padding:4px 10px 6px;box-shadow:0 2px 6px rgba(0,0,0,.25);}
+#datebar a{color:#F9FAFB;text-decoration:none;font-weight:500}
+#datebar h2{display:inline;margin:0 4px 0 0;font-size:15px;color:#60A5FA}
+#datebar .mut{color:#9CA3AF}
+#datebar #content>div{margin-bottom:4px}
 </style></head><body>
 <div class="sticky-header"><div class="sites" id="siteIcons"></div>
 <div id="searchLine" style="position:relative;display:flex;align-items:center;justify-content:center;margin:8px auto 12px auto;max-width:400px;width:100%">
@@ -19,6 +24,16 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 <div id="scrollButtons" style="position:absolute;right:4px;display:flex;gap:8px;user-select:none;font-size:20px;cursor:pointer">
 <div id="pageDownArrow" title="Scroll one page down">⬇️</div>
 <div id="topArrow" title="Scroll to top">⏫</div></div></div></div>
+
+<div id="datebar">
+  <div id="d"></div>
+  <div id="content" style="display:none;">
+    <div id="otd"><h2>On this day</h2><div class="mut">loading…</div></div>
+    <div id="mv"><h2>Movies</h2><div class="mut">loading…</div></div>
+    <div id="al"><h2>Albums</h2><div class="mut">loading…</div></div>
+    <div id="ft"><h2>Matches</h2><div class="mut">loading…</div></div>
+  </div>
+</div>
 
 <div class="block-title">📰 Wiadomości</div><div class="scroll-pane"><div class="feed-list" id="feedListX0">Loading…</div></div>
 <div class="block-title">⚽️ Sport</div><div class="scroll-pane"><div class="feed-list" id="feedListX1">Loading…</div></div>
@@ -74,4 +89,105 @@ topArrow.onclick=()=>scrollTo({top:0,behavior:'smooth'});
 
 function loadSeq(){fNR(feedsX0,'feedListX0');setTimeout(()=>fNR(feedsX1,'feedListX1'),400);setTimeout(()=>fNR(feedsX2,'feedListX2'),800);setTimeout(()=>fNR(feedsX3,'feedListX3'),1200);setTimeout(()=>fNR(feedsX4,'feedListX4'),1600);}
 loadSeq();
+
+(async()=>{
+const tmdbKey="179d23dc4b4a1ba27263fcc2503d5e3d";
+const footKey="f1637751ac2e41dc8cfbe1f9492c0a4b";                
+
+const today=new Date(),
+ymd=today.toISOString().slice(0,10),
+MM=('0'+(today.getMonth()+1)).slice(-2),
+DD=('0'+today.getDate()).slice(-2);
+const $=id=>document.getElementById(id),set=(id,html)=>($(id).innerHTML=html);
+
+// 🔹 Static Polish names-day array
+const namesdayArray=[
+["Mieszka, Mieczysława, Marii","Izydora, Bazylego, Grzegorza","Arlety, Genowefy, Danuty","Tytusa, Anieli, Eugeniusza","Hanny, Szymona, Edwarda","Kacpra, Melchiora, Baltazara","Juliana, Lucjana, Rajmunda","Seweryna, Mścisława, Juliusza","Marceliny, Marianny, Juliana","Wilhelma, Dobrosława, Danuty","Honoraty, Teodozjusza, Matyldy","Grety, Arkadiusza, Rajmunda","Bogumiły, Weroniki, Hilarego","Feliksa, Domosława, Niny","Pawła, Arnolda, Izydora","Marcelego, Włodzimierza, Waldemara","Antoniego, Rościsława, Jana","Piotra, Małgorzaty","Henryka, Mariusza, Marty","Fabiana, Sebastiana","Agnieszki, Jarosława","Anastazego, Wincentego","Ildefonsa, Rajmunda","Felicji, Franciszka, Rafała","Pawła, Miłosza, Elwiry","Tymoteusza, Michała, Tytusa","Przybysława, Anieli, Jerzego","Walerego, Radomira, Tomasza","Zdzisława, Franciszka, Józefa","Macieja, Martyny, Teofila","Marceli, Ludwiki, Jana"],
+["Brygidy, Ignacego, Seweryna","Marii, Miłosława","Błażeja, Oskara","Andrzeja, Weroniki, Joanny","Agaty, Adelajdy","Doroty, Bogdana, Pawła","Ryszarda, Teodora, Romana","Hieronima, Sebastiana, Ireny","Apolonii, Eryki, Cyryla","Elwiry, Jacka, Scholastyki","Lucjana, Olgierda","Eulalii, Radosława, Modesta","Grzegorza, Katarzyny","Cyryla, Metodego, Walentego","Jowity, Faustyna, Zygfryda","Danuty, Julianny, Daniela","Aleksego, Zbigniewa, Łukasza","Szymona, Konstancji, Flawiana","Arnolda, Konrada, Marcelego","Leona, Ludomira, Zenobiusza","Eleonory, Fortunata, Roberta","Marty, Małgorzaty, Piotra","Romany, Damiana, Polikarpa","Macieja, Bogusza, Sergiusza","Wiktora, Cezarego","Mirosława, Aleksandra","Gabriela, Anastazji","Romana, Ludomira, Lecha","Lecha, Lutosława"],
+["Antoniny, Radosława, Dawida","Heleny, Halszki, Pawła","Maryny, Kunegundy, Tycjana","Lucji, Kazimierza, Eugeniusza","Adriana, Fryderyka, Teofila","Róży, Jordana, Agnieszki","Tomasza, Perpetuy, Felicyty","Beaty, Wincentego, Jana","Franciszki, Brunona","Cypriana, Marcela, Aleksandra","Ludosława, Konstantyna, Benedykta","Grzegorza, Justyna, Alojzego","Bożeny, Krystyny","Leona, Matyldy, Łazarza","Longina, Klemensa, Ludwiki","Izabeli, Oktawii, Hilarego","Patryka, Zbigniewa, Gertrudy","Cyryla, Edwarda, Boguchwały","Józefa, Bogdana","Klaudii, Eufemii, Maurycego","Lubomira, Benedykta","Katarzyny, Bogusława","Pelagii, Oktawiana, Feliksa","Marka, Gabriela, Katarzyny","Marioli, Wieczysława, Ireneusza","Larysy, Emanuela, Teodora","Lidii, Ernesta","Anieli, Sykstusa, Jana","Wiktoryna, Helmuta, Eustachego","Anieli, Kwiryna, Leonarda","Beniamina, Dobromierza, Leonarda"],
+["Teodory, Grażyny, Ireny","Władysława, Franciszka, Teodozji","Ryszarda, Pankracego, Ingi","Izydora, Wacława","Ireny, Wincentego","Izoldy, Celestyna, Wilhelma","Rufina, Celestyna, Jana","Cezaryny, Dionizego, Julii","Marii, Dymitra, Heliodora","Michała, Makarego","Filipa, Leona","Juliusza, Lubosława, Zenona","Przemysława, Hermenegildy, Marcina","Bereniki, Waleriana, Justyny","Ludwiny, Wacławy, Anastazji","Kseni, Cecylii, Bernardety","Rudolfa, Roberta","Bogusławy, Apoloniusza","Adolfa, Tymona, Leona","Czesława, Agnieszki, Mariana","Anzelma, Bartosza, Feliksa","Kai, Leonii, Sotera","Jerzego, Wojciecha","Horacego, Feliksa, Grzegorza","Marka, Jarosława, Wasyla","Marzeny, Klaudiusza, Marii","Zyty, Teofila, Felicji","Piotra, Walerii, Witalisa","Rity, Katarzyny, Bogusława","Mariana, Donaty, Tamary"],
+["Józefa, Jeremiasza, Filipa","Zygmunta, Atanazego, Anatola","Marii, Antoniny","Moniki, Floriana, Władysława","Ireny, Waldemara","Judyty, Jakuba, Filipa","Gizeli, Ludmiły, Benedykta","Stanisława, Lizy, Wiktora","Bożydara, Grzegorza, Karoliny","Izydora, Antoniny, Symeona","Igi, Miry, Władysławy","Pankracego, Dominika, Achillesa","Serwacego, Roberta, Glorii","Bonifacego, Dobiesława, Macieja","Zofii, Nadziei, Izydora","Andrzeja, Jedrzeja, Szymona","Paschalisa, Sławomira, Weroniki","Eryka, Feliksa, Jana","Iwa, Piotra, Celestyna","Bazylego, Bernardyna, Aleksandra","Wiktora, Kryspina, Tymoteusza","Heleny, Wiesławy, Ryty","Iwony, Dezyderego, Kryspina","Joanny, Zuzanny","Grzegorza, Urbana, Magdaleny","Filipa, Pauliny","Augustyna, Juliana, Magdaleny","Jaromira, Justa, Justyny","Magdaleny, Bogumiły, Urszuli","Ferdynanda, Karola, Jana","Anieli, Petroneli"],
+["Justyna, Anieli, Konrada","Marianny, Marcelina, Piotra","Leszka, Tamary, Karola","Kwiryny, Franciszka","Waltera, Bonifacego, Walerii","Norberta, Laurentego, Bogumiła","Roberta, Wiesława","Medarda, Maksyma, Seweryna","Pelagii, Dominika, Efrema","Bogumiła, Małgorzaty, Diany","Barnaby, Radomiła, Feliksa","Janiny, Onufrego, Leona","Lucjana, Antoniego","Bazylego, Elwiry, Michała","Wita, Jolanty","Aliny, Benona, Anety","Laury, Marcjana, Alberta","Marka, Elżbiety","Gerwazego, Protazego","Diny, Bogny, Florentyny","Alicji, Alojzego","Pauliny, Tomasza, Jana","Wandy, Zenona","Jana, Danuty","Lucji, Wilhelma, Doroty","Jana, Pawła","Maryli, Władysława, Cyryla","Leona, Ireneusza","Piotra, Pawła","Emilii, Lucyny"],
+["Haliny, Mariana, Marcina","Jagody, Urbana, Marii","Jacka, Anatola, Tomasza","Odona, Malwiny, Elżbiety","Marii, Antoniego","Gotarda, Dominiki, Lucji","Cyryla, Estery, Metodego","Edgara, Elżbiety, Eugeniusza","Lukrecji, Weroniki, Zenona","Sylwany, Witalisa, Antoniego","Olgi, Kaliny, Benedykta","Jana, Brunona, Bonifacego","Henryka, Kingi, Andrzeja","Ulryka, Bonawentury, Kamila","Henryka, Włodzimierza, Dawida","Mariki, Benity, Eustachego","Anety, Bogdana, Jadwigi","Erwina, Kamila, Szymona","Wincentego, Wodzisława, Marcina","Czesława, Hieronima, Małgorzaty","Daniela, Dalidy, Wawrzyńca","Marii, Magdaleny","Stwosza, Bogny, Brygidy","Kingi, Krystyny","Walentyny, Krzysztofa, Jakuba","Anny, Mirosławy, Grażyny","Lilii, Julii, Natalii","Aidy, Marceli, Wiktora","Olafa, Marty, Ludmiły","Julity, Piotra, Aldony","Ignacego, Lubomira, Heleny"],
+["Nadii, Justyna, Juliana","Kariny, Gustawa, Euzebiusza","Lidii, Augusta, Nikodema","Dominika, Protazego, Jana","Oswalda, Marii, Mariana","Sławy, Jakuba, Oktawiana","Kajetana, Doroty, Sykstusa","Cypriana, Emiliana, Dominika","Romana, Ryszarda, Edyty","Borysa, Filomeny, Wawrzyńca","Klary, Zuzanny, Lecha","Innocentego, Lecha, Euzebii","Diany, Hipolita, Poncjana","Alfreda, Euzebiusza, Maksymiliana","Napoleona, Stelii","Rocha, Stefana, Joachima","Żanny, Mirona, Jacka","Ilony, Bronisławy, Heleny","Bolesława, Juliana","Bernarda, Samuela, Sobiesława","Joanny, Kazimiery, Piusa","Cezarego, Tymoteusza","Apolinarego, Filipa","Jerzego, Bartosza, Haliny","Luizy, Ludwika, Józefa","Marii, Aleksandra","Cezarego, Józefa, Moniki","Patrycji, Wyszomira, Augustyna","Beaty, Jana, Sabiny, Racibora","Róży, Szczęsnego, Feliksa","Bogdana, Ramony, Rajmunda"],
+["Idziego, Bronisława","Juliana, Stefana, Wilhelma","Grzegorza, Izabeli, Szymona","Idy, Julianny, Rozalii, Róży","Doroty, Teodora, Wawrzyńca","Beaty, Eugeniusza","Domosławy, Melchiora, Reginy","Marii, Adrianny, Serafiny","Ścibora, Sergiusza, Piotra","Łukasza, Aldony, Mścisława","Jacka, Prota, Dagny, Hiacynta","Gwidona, Radzimira, Marii","Eugenii, Aureliusza, Jana","Roksany, Bernarda, Cypriana","Albina, Nikodema, Marii","Edyty, Korneliusza, Cypriana","Franciszka, Roberta, Justyna","Irmy, Stanisława, Ireny","Januarego, Konstancji, Teodora","Filipiny, Eustachego, Euzebii","Jonasza, Mateusza, Hipolita","Tomasza, Maurycego, Joachima","Tekli, Bogusława, Linusa","Gerarda, Ruperta, Tomiry","Aurelii, Władysława, Kleofasa","Wawrzyńca, Kosmy, Damiana","Wincentego, Mirabeli, Justyny","Wacława, Tymona, Marka","Michała, Gabriela, Rafała","Wery, Honoriusza, Hieronima"],
+["Danuty, Remigiusza, Teresy","Teofila, Dionizego, Sławomira","Teresy, Heliodora, Jana","Rozalii, Edwina, Franciszka","Placyda, Apolinarego","Artura, Brunona","Marii, Marka, Mirelli","Pelagii, Brygidy, Walerii","Amolda, Dionizego, Wincentego","Pauliny, Danieli, Leona","Aldony, Aleksandra, Dobromiry","Eustachego, Maksymiliana, Edwina","Geralda, Edwarda, Honorata","Liwii, Kaliksta, Bernarda","Jadwigi, Teresy, Florentyny","Gaweła, Ambrożego","Wiktora, Marity, Ignacego","Juliana, Łukasza","Ziemowita, Jana, Pawła","Ireny, Kleopatry, Jana","Urszuli, Hilarego, Jakuba","Halki, Filipa, Salomei","Marleny, Seweryna, Igi","Rafała, Marcina, Antoniego","Darii, Wilhelminy, Bonifacego","Lucjana, Ewarysta, Damiana","Iwony, Sabiny","Szymona, Tadeusza","Euzebii, Wioletty, Felicjana","Zenobii, Przemysława, Edmunda","Urbana, Saturnina, Krzysztofa"],
+["Wszystkich Świętych","Bohdany, Bożydara","Sylwii, Marcina, Huberta","Karola, Olgierda","Elżbiety, Sławomira, Dominika","Feliksa, Leonarda, Ziemowita","Antoniego, Żytomira, Ernesta","Seweryna, Bogdana, Klaudiusza","Aleksandra, Ludwika, Teodora","Leny, Ludomira, Leona","Marcina, Bartłomieja, Teodora","Renaty, Witolda, Jozafata","Mateusza, Izaaka, Stanisława","Rogera, Serafina, Wawrzyńca","Alberta, Leopolda","Gertrudy, Edmunda, Marii","Salomei, Grzegorza, Elżbiety","Romana, Klaudyny, Karoliny","Seweryny, Maksyma, Salomei","Anatola, Sedzimira, Rafała","Alberta, Janusza, Konrada","Cecylii, Wszemiły, Stefana","Adelii, Klemensa, Felicyty","Flory, Emmy, Chryzogona","Erazma, Katarzyny","Delfiny, Sylwestra, Konrada","Waleriana, Wirgiliusza, Maksyma","Lesława, Zdzisława, Stefana","Błażeja, Saturnina","Andrzeja, Maury, Konstantego"],
+["Natalii, Eligiusza, Edmunda","Balbiny, Bibianny, Pauliny","Franciszka, Ksawerego, Kasjana","Barbary, Krystiana, Jana","Sabiny, Krystyny, Edyty","Mikołaja, Jaremy, Emiliana","Marcina, Ambrożego, Teodora","Marii, Światozara, Makarego","Wiesława, Leokadii, Joanny","Julii, Danieli, Bogdana","Damazego, Waldemara, Daniela","Dagmary, Aleksandra, Ady","Łucji, Otylii","Alfreda, Izydora, Jana","Niny, Celiny, Waleriana","Albiny, Zdzisławy, Alicji","Olimpii, Łazarza, Floriana","Gracjana, Bogusława, Laurencji","Gabrieli, Dariusza, Eleonory","Bogumiły, Dominika","Tomisława, Seweryna, Piotra","Zenona, Honoraty, Franciszki","Wiktorii, Sławomiry, Jana","Adama, Ewy, Eweliny","Anastazji, Eugenii","Dionizego, Szczepana","Jana, Żanety, Maksyma","Teofilii, Godzisława","Dawida, Sylwestra, Mariusza"]
+];
+
+// function to get today’s names
+function getNamesday(){
+  const d=new Date();
+  const m=d.getMonth(),day=d.getDate()-1;
+  return (namesdayArray[m]&&namesdayArray[m][day])?namesdayArray[m][day]:"";
+}
+$("d").innerHTML=`<b>👉   📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday()||"<span class='mut'>none</span>"}   👈</b>`;
+
+// utility
+const j=async(u,o)=>{try{const r=await fetch(u,o);if(!r.ok)throw 0;return await r.json()}catch(e){return null}}
+const bullets=(arr,max=8,map=x=>x)=>arr&&arr.length?arr.slice(0,max).map(map).join(" • "):"<span class='mut'>none</span>";
+
+// 🔹 On this day (sorted oldest→newest, top 5, year bolded)
+j(`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${MM}/${DD}`).then(d=>{
+ let ev=(d&&d.events)?d.events.sort((a,b)=>a.year-b.year).slice(0,5):[];
+ const html=ev.map(x=>{
+  const yr=`<b>${x.year}</b>`;
+  const txt=x.text.split(" – ")[0]||"";
+  const link=(x.pages?.[0]?.titles?.normalized)||"";
+  return `${yr}: <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(link)}" target="_blank" style="font-weight:400">${txt}</a>`;
+  }).join(" • ");
+ set("otd",`<h2 style="display:inline; margin-right:6px;">On this day</h2>${html||"<span class='mut'>none</span>"}`);
+});
+
+// 🔹 Movies (bold + extended)
+(async()=>{
+ if(!tmdbKey){set("mv","<h2>Movies</h2><span class='mut'>add TMDb key</span>");return;}
+ const d=await j(`https://api.themoviedb.org/3/discover/movie?api_key=${tmdbKey}&language=en-US&region=US&with_release_type=3|2&primary_release_date.gte=${ymd}&primary_release_date.lte=${ymd}&sort_by=popularity.desc`);
+ if(!d||!d.results){set("mv","<h2>Movies</h2><span class='mut'>none</span>");return;}
+ const movies=d.results.slice(0,8);
+ const infos=[];
+ for(const m of movies){
+   const det=await j(`https://api.themoviedb.org/3/movie/${m.id}?api_key=${tmdbKey}&append_to_response=credits`);
+   if(!det)continue;
+   const genres=(det.genres||[]).map(g=>g.name).join(", ");
+   const dir=(det.credits.crew.find(c=>c.job=="Director")||{}).name||"";
+   const cast=(det.credits.cast||[]).slice(0,3).map(c=>c.name).join(", ");
+   infos.push(
+  `<a href="https://www.themoviedb.org/movie/${m.id}" target="_blank"><b>${m.title}</b></a>` + (genres ? " " + genres.split(", ")[0] : "") + (dir ? " by " + dir : "") + (cast ? `, <i>${cast}</i>` : ""));
+ }
+ set("mv",`<h2 style="display:inline; margin-right:6px;">Movies</h2>${infos.length?infos.join(" • "):"<span class='mut'>none</span>"}`);
+})();
+
+// 🔹 Albums (bold + artists)
+j(`https://musicbrainz.org/ws/2/release/?query=date:${ymd}%20AND%20status:official&fmt=json&limit=15`).then(d=>{
+ const seen=new Set,releases=(d&&d.releases||[]).filter(x=>{
+   const t=(x["release-group"]?.title)||x.title;
+   if(seen.has(t))return false; seen.add(t); return t;
+ });
+ const html=bullets(releases,10,x=>{
+   const t=(x["release-group"]?.title)||x.title;
+   const id=(x["release-group"]?.id)||x.id;
+   const artists=(x["artist-credit"]||[]).map(a=>a.name).join(", ");
+   return `<a href="https://musicbrainz.org/release-group/${id}" target="_blank"><b>${t}</b></a>${artists?" "+artists:""}`;
+ });
+ set("al",`<h2 style="display:inline; margin-right:6px;">Albums</h2>${html}`);
+});
+
+// 🔹 Matches
+(async()=>{
+ if(!footKey){set("ft","<h2>Matches</h2><span class='mut'>add football key</span>");return;}
+ const d=await j(`https://api.football-data.org/v4/matches?dateFrom=${ymd}&dateTo=${ymd}&competitions=PD,CL,EL,EC`,
+                 {headers:{"X-Auth-Token":footKey}});
+ const matches=(d&&d.matches)||[];
+ const html=matches.length?matches.slice(0,10).map(m=>`${m.competition.code||m.competition.name}: ${m.homeTeam.name} vs ${m.awayTeam.name} ${(m.utcDate||"").slice(11,16)} UTC`).join("<br>"):"<span class='mut'>none</span>";
+ set("ft",`<h2 style="display:inline; margin-right:6px;">Matches</h2>${html}`);
+})();
+
+$("d").onclick=()=>{
+  const c=$("content");
+  c.style.display=c.style.display==="none"?"block":"none";
+};
+     
+})();
 </script></body></html>
