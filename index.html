@@ -123,7 +123,7 @@ function getNamesday(){
   const m=d.getMonth(),day=d.getDate()-1;
   return (namesdayArray[m]&&namesdayArray[m][day])?namesdayArray[m][day]:"";
 }
-$("d").innerHTML=`<b>👉   📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday()||"<span class='mut'>none</span>"}   👈</b>`;
+$("d").innerHTML=`<b>↕️ 📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday()||"<span class='mut'>none</span>"} ↕️</b>`;
 
 // utility
 const j=async(u,o)=>{try{const r=await fetch(u,o);if(!r.ok)throw 0;return await r.json()}catch(e){return null}}
