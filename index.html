@@ -140,20 +140,27 @@ $("d").innerHTML=`
       const c=localStorage.getItem(cacheKey);
       if(c){
         const {t,lat,lon,tz,city}=JSON.parse(c);
-        if(Date.now()-t<cacheTime)return{lat,lon,tz};
+        if(Date.now()-t<cacheTime)return{lat,lon,tz,city};
       }
       const r=await fetch("https://ipapi.co/json/");
       const d=await r.json();
-      const obj={lat:d.latitude,lon:d.longitude,tz:d.timezone||"Europe/Warsaw",t:Date.now()};
+      const obj={lat:d.latitude,lon:d.longitude,tz:d.timezone||"Europe/Warsaw",city:d.city,t:Date.now()};
       localStorage.setItem(cacheKey,JSON.stringify(obj));
       return obj;
-    }catch{return{lat:53.1235,lon:18.0084,tz:"Europe/Warsaw"};}
+    }catch{
+      return{lat:53.1235,lon:18.0084,tz:"Europe/Warsaw",city:"Bydgoszcz"};
+    }
   }
 
   (async()=>{
-    const {lat,lon,tz}=await getLocation();
+    const {lat,lon,tz,city}=await getLocation();
+    const proxy="https://api.allorigins.win/get?url=";
     const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=pressure_msl&daily=sunrise,sunset&timezone=${encodeURIComponent(tz)}`;
-    const r=await fetch(url),d=await r.json();
+
+    const r=await fetch(proxy+encodeURIComponent(url));
+    const data=await r.json();
+    const d=JSON.parse(data.contents);
+
     const cw=d.current_weather||{},
           t=cw.temperature??"—",
           w=cw.windspeed??"—",
@@ -162,11 +169,13 @@ $("d").innerHTML=`
           prs=d.hourly.pressure_msl||[],
           times=d.hourly.time||[],
           now=new Date();
+
     let nearest=0,minDiff=1e9;
     for(let i=0;i<times.length;i++){
       const diff=Math.abs(new Date(times[i])-now);
       if(diff<minDiff){minDiff=diff;nearest=i;}
     }
+
     const p=prs[nearest]?Math.round(prs[nearest]):"—",
           sr=(d.daily.sunrise||["–"])[0].split("T")[1]?.slice(0,5)||"–",
           ss=(d.daily.sunset||["–"])[0].split("T")[1]?.slice(0,5)||"–",
@@ -176,7 +185,7 @@ $("d").innerHTML=`
           percent=Math.round(ph*100);
 
     document.getElementById("weather").innerHTML=
-      `${city} ${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
+      `${city} • ${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
   })().catch(_=>{
     document.getElementById("weather").textContent="Weather unavailable.";
   });
