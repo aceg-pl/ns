@@ -132,6 +132,10 @@ $("d").innerHTML=`
 
 (()=>{
   const lat=53.1235,lon=18.0084,tz="Europe/Warsaw";
+
+  function moonPhase(date){const lp=2551443,now=date/1000;const newMoon=592500;const phase=((now-newMoon)%lp)/lp;return phase<0?phase+1:phase;}
+  function moonIcon(phase){if(phase<0.03||phase>0.97)return"🌑";if(phase<0.25)return"🌒";if(phase<0.27)return"🌓";if(phase<0.47)return"🌔";if(phase<0.53)return"🌕";if(phase<0.75)return"🌖";if(phase<0.77)return"🌗";return"🌘";}
+
   fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=pressure_msl&daily=sunrise,sunset&timezone=${encodeURIComponent(tz)}`)
   .then(r=>r.json()).then(d=>{
     const cw=d.current_weather||{},t=cw.temperature??"—",w=cw.windspeed??"—",c=cw.weathercode??0;
@@ -141,8 +145,12 @@ $("d").innerHTML=`
     const p=idx>=0?Math.round(prs[idx]):"—";
     const sr=(d.daily.sunrise||["–"])[0].split("T")[1]?.slice(0,5)||"–";
     const ss=(d.daily.sunset||["–"])[0].split("T")[1]?.slice(0,5)||"–";
+    const phase=moonPhase(new Date());
+    const moon=moonIcon(phase);
+    const percent=Math.round(phase*100);
+    
     document.getElementById("weather").innerHTML=
-      `${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr} • 🌃 ${ss}`;
+      `${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr} • 🌃 ${ss} • ${moon} ${percent}%`;
   }).catch(_=>{
     document.getElementById("weather").textContent="Weather unavailable.";
   });
