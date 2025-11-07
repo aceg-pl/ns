@@ -176,7 +176,7 @@ $("d").innerHTML=`
           percent=Math.round(ph*100);
 
     document.getElementById("weather").innerHTML=
-      `${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
+      `${loc.city} ${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
   })().catch(_=>{
     document.getElementById("weather").textContent="Weather unavailable.";
   });
