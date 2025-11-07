@@ -141,8 +141,9 @@ $("d").innerHTML=`
     const cw=d.current_weather||{},t=cw.temperature??"—",w=cw.windspeed??"—",c=cw.weathercode??0;
     const icon=c<3?'☀️':c<50?'☁️':c<60?'🌧️':'☔️';
     const prs=d.hourly.pressure_msl||[],tm=d.hourly.time||[];
-    const idx=tm.findIndex(x=>x.startsWith(new Date().toISOString().slice(0,13)));
-    const p=idx>=0?Math.round(prs[idx]):"—";
+    let nearest=0, minDiff=1e9;
+    for(let i=0;i<times.length;i++){const diff=Math.abs(new Date(times[i]) - now);if(diff < minDiff){ minDiff = diff; nearest = i; }}
+    const p = prs[nearest] ? Math.round(prs[nearest]) : "—";
     const sr=(d.daily.sunrise||["–"])[0].split("T")[1]?.slice(0,5)||"–";
     const ss=(d.daily.sunset||["–"])[0].split("T")[1]?.slice(0,5)||"–";
     const phase=moonPhase(new Date());
