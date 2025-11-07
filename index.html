@@ -131,11 +131,27 @@ $("d").innerHTML=`
 `;
 
 (()=>{
-  const lat=53.1235, lon=18.0084, tz="Europe/Warsaw";
+  const cacheKey="weatherLoc", cacheTime=3600e3; // 1h cache
 
-  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=pressure_msl&daily=sunrise,sunset&timezone=${encodeURIComponent(tz)}`)
-  .then(r=>r.json())
-  .then(d=>{
+  async function getLocation(){
+    try{
+      const c=localStorage.getItem(cacheKey);
+      if(c){
+        const {t,lat,lon,tz}=JSON.parse(c);
+        if(Date.now()-t<cacheTime)return{lat,lon,tz};
+      }
+      const r=await fetch("https://ipapi.co/json/");
+      const d=await r.json();
+      const obj={lat:d.latitude,lon:d.longitude,tz:d.timezone||"Europe/Warsaw",t:Date.now()};
+      localStorage.setItem(cacheKey,JSON.stringify(obj));
+      return obj;
+    }catch{return{lat:53.1235,lon:18.0084,tz:"Europe/Warsaw"};}
+  }
+
+  (async()=>{
+    const {lat,lon,tz}=await getLocation();
+    const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=pressure_msl&daily=sunrise,sunset&timezone=${encodeURIComponent(tz)}`;
+    const r=await fetch(url),d=await r.json();
     const cw=d.current_weather||{},
           t=cw.temperature??"—",
           w=cw.windspeed??"—",
@@ -152,15 +168,14 @@ $("d").innerHTML=`
     const p=prs[nearest]?Math.round(prs[nearest]):"—",
           sr=(d.daily.sunrise||["–"])[0].split("T")[1]?.slice(0,5)||"–",
           ss=(d.daily.sunset||["–"])[0].split("T")[1]?.slice(0,5)||"–",
-          lp=2551443, newMoon=592500,
+          lp=2551443,newMoon=592500,
           ph=(((now/1000)-newMoon)%lp)/lp<0?(((now/1000)-newMoon)%lp)/lp+1:(((now/1000)-newMoon)%lp)/lp,
           moon=ph<0.03||ph>0.97?"🌑":ph<0.25?"🌒":ph<0.27?"🌓":ph<0.47?"🌔":ph<0.53?"🌕":ph<0.75?"🌖":ph<0.77?"🌗":"🌘",
           percent=Math.round(ph*100);
 
     document.getElementById("weather").innerHTML=
       `${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
-  })
-  .catch(_=>{
+  })().catch(_=>{
     document.getElementById("weather").textContent="Weather unavailable.";
   });
 })();
