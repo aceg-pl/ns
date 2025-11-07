@@ -186,7 +186,7 @@ j(`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${MM}/${DD}`).th
  if(!tmdbKey){set("mv","<h2>Movies</h2><span class='mut'>add TMDb key</span>");return;}
  const d=await j(`https://api.themoviedb.org/3/discover/movie?api_key=${tmdbKey}&language=en-US&region=US&with_release_type=3|2&primary_release_date.gte=${ymd}&primary_release_date.lte=${ymd}&sort_by=popularity.desc`);
  if(!d||!d.results){set("mv","<h2>Movies</h2><span class='mut'>none</span>");return;}
- const movies=d.results.slice(0,8);
+ const movies=d.results.filter(x=>["en","pl"].includes(x.original_language)).slice(0,8);
  const infos=[];
  for(const m of movies){
    const det=await j(`https://api.themoviedb.org/3/movie/${m.id}?api_key=${tmdbKey}&append_to_response=credits`);
@@ -203,9 +203,11 @@ j(`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${MM}/${DD}`).th
 // 🔹 Albums (bold + artists)
 j(`https://musicbrainz.org/ws/2/release/?query=date:${ymd}%20AND%20status:official&fmt=json&limit=15`).then(d=>{
  const seen=new Set,releases=(d&&d.releases||[]).filter(x=>{
+   const lang=(x["text-representation"]?.language)||"";
+   if(lang && !["eng","pol"].includes(lang))return false;
    const t=(x["release-group"]?.title)||x.title;
    if(seen.has(t))return false; seen.add(t); return t;
- });
+});
  const html=bullets(releases,10,x=>{
    const t=(x["release-group"]?.title)||x.title;
    const id=(x["release-group"]?.id)||x.id;
