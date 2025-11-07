@@ -126,53 +126,17 @@ function getNamesday(){
 }
   
 $("d").innerHTML=`
-  <div style="font-weight:600;font-size:13px;color:#000">
-    ↕️ 📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'short'})}) — 🕊️ ${getNamesday()||"<span class='mut'>none</span>"} ↕️
-  </div>
+  <b>↕️ 📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday()||"<span class='mut'>none</span>"} ↕️</b>
   <div id="weather" style="margin-top:4px;font-weight:400;font-size:13px;color:#000"></div>
 `;
 
 (()=>{
-  const cacheKey="weatherLoc", cacheTime=3600e3; // 1h cache
+  const lat=53.1235, lon=18.0084, tz="Europe/Warsaw";
 
-  async function getLocation(){
-    try{
-      const c=localStorage.getItem(cacheKey);
-      if(c){
-        const {t,lat,lon,tz,city}=JSON.parse(c);
-        if(Date.now()-t<cacheTime)return{lat,lon,tz,city};
-      }
-      const r=await fetch("https://ipapi.co/json/");
-      const d=await r.json();
-      const obj={lat:d.latitude,lon:d.longitude,tz:d.timezone||"Europe/Warsaw",city:d.city||"—",t:Date.now()};
-      localStorage.setItem(cacheKey,JSON.stringify(obj));
-      return obj;
-    }catch{
-      return{lat:53.1235,lon:18.0084,tz:"Europe/Warsaw",city:"Bydgoszcz"};
-    }
-  }
-
-  (async()=>{
-    const {lat,lon,tz,city}=await getLocation();
-
-    // direct first, fallback to codetabs proxy if fails
-    async function safeFetch(u){
-      try{
-        const r=await fetch(u);
-        if(!r.ok)throw 0;
-        return await r.json();
-      }catch{
-        const r2=await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`);
-        return await r2.json();
-      }
-    }
-
-    const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=pressure_msl&daily=sunrise,sunset&timezone=${encodeURIComponent(tz)}`;
-    const d=await safeFetch(url);
-
-    if(!d||!d.current_weather){document.getElementById("weather").textContent="Weather unavailable.";return;}
-
-    const cw=d.current_weather,
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=pressure_msl&daily=sunrise,sunset&timezone=${encodeURIComponent(tz)}`)
+  .then(r=>r.json())
+  .then(d=>{
+    const cw=d.current_weather||{},
           t=cw.temperature??"—",
           w=cw.windspeed??"—",
           c=cw.weathercode??0,
@@ -180,24 +144,23 @@ $("d").innerHTML=`
           prs=d.hourly.pressure_msl||[],
           times=d.hourly.time||[],
           now=new Date();
-
     let nearest=0,minDiff=1e9;
     for(let i=0;i<times.length;i++){
       const diff=Math.abs(new Date(times[i])-now);
       if(diff<minDiff){minDiff=diff;nearest=i;}
     }
-
     const p=prs[nearest]?Math.round(prs[nearest]):"—",
           sr=(d.daily.sunrise||["–"])[0].split("T")[1]?.slice(0,5)||"–",
           ss=(d.daily.sunset||["–"])[0].split("T")[1]?.slice(0,5)||"–",
-          lp=2551443,newMoon=592500,
+          lp=2551443, newMoon=592500,
           ph=(((now/1000)-newMoon)%lp)/lp<0?(((now/1000)-newMoon)%lp)/lp+1:(((now/1000)-newMoon)%lp)/lp,
           moon=ph<0.03||ph>0.97?"🌑":ph<0.25?"🌒":ph<0.27?"🌓":ph<0.47?"🌔":ph<0.53?"🌕":ph<0.75?"🌖":ph<0.77?"🌗":"🌘",
           percent=Math.round(ph*100);
 
     document.getElementById("weather").innerHTML=
-      `<b>${city}</b> • ${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
-  })().catch(_=>{
+      `${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
+  })
+  .catch(_=>{
     document.getElementById("weather").textContent="Weather unavailable.";
   });
 })();
