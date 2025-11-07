@@ -124,28 +124,27 @@ function getNamesday(){
   const m=d.getMonth(),day=d.getDate()-1;
   return (namesdayArray[m]&&namesdayArray[m][day])?namesdayArray[m][day]:"";
 }
+  
 $("d").innerHTML=`
-  <span id="wleft" style="float:left;margin-left:6px;font-weight:400;font-size:13px;"></span>
   <b>↕️ 📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday()||"<span class='mut'>none</span>"} ↕️</b>
-  <span id="wright" style="float:right;margin-right:6px;font-weight:400;font-size:13px;"></span>
+  <div id="weather" style="margin-top:4px;font-weight:400;font-size:13px;color:#000"></div>
 `;
 
 (()=>{
   const lat=53.1235,lon=18.0084,tz="Europe/Warsaw";
   fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=pressure_msl&daily=sunrise,sunset&timezone=${encodeURIComponent(tz)}`)
   .then(r=>r.json()).then(d=>{
-    const cw=d.current_weather||{},temp=cw.temperature??"?",wind=cw.windspeed??"?",code=cw.weathercode??0;
-    const desc=code<3?'☀️':code<50?'☁️':code<60?'🌧️':'☔️';
-    const pressures=d.hourly.pressure_msl||[],times=d.hourly.time||[];
-    const idx=times.findIndex(t=>t.startsWith(new Date().toISOString().slice(0,13)));
-    const p=idx>=0?Math.round(pressures[idx]):"—";
+    const cw=d.current_weather||{},t=cw.temperature??"—",w=cw.windspeed??"—",c=cw.weathercode??0;
+    const icon=c<3?'☀️':c<50?'☁️':c<60?'🌧️':'☔️';
+    const prs=d.hourly.pressure_msl||[],tm=d.hourly.time||[];
+    const idx=tm.findIndex(x=>x.startsWith(new Date().toISOString().slice(0,13)));
+    const p=idx>=0?Math.round(prs[idx]):"—";
     const sr=(d.daily.sunrise||["–"])[0].split("T")[1]?.slice(0,5)||"–";
     const ss=(d.daily.sunset||["–"])[0].split("T")[1]?.slice(0,5)||"–";
-    document.getElementById("wleft").innerHTML=`${desc} ${temp}°C • 💨${wind}km/h • 🌪️${p}hPa`;
-    document.getElementById("wright").innerHTML=`🌅${sr} • 🌃${ss}`;
+    document.getElementById("weather").innerHTML=
+      `${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr} • 🌃 ${ss}`;
   }).catch(_=>{
-    document.getElementById("wleft").textContent="—";
-    document.getElementById("wright").textContent="";
+    document.getElementById("weather").textContent="Weather unavailable.";
   });
 })();
 
