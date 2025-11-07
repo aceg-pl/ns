@@ -175,15 +175,12 @@ j(`https://musicbrainz.org/ws/2/release/?query=date:${ymd}%20AND%20status:offici
  set("al",`<h2 style="display:inline; margin-right:6px;">Albums</h2>${html}`);
 });
 
-// 🔹 Matches
-(async()=>{
- if(!footKey){set("ft","<h2>Matches</h2><span class='mut'>add football key</span>");return;}
- const d=await j(`https://api.football-data.org/v4/matches?dateFrom=${ymd}&dateTo=${ymd}&competitions=PD,CL,EL,EC`,
-                 {headers:{"X-Auth-Token":footKey}});
- const matches=(d&&d.matches)||[];
- const html=matches.length?matches.slice(0,10).map(m=>`${m.competition.code||m.competition.name}: ${m.homeTeam.name} vs ${m.awayTeam.name} ${(m.utcDate||"").slice(11,16)} UTC`).join("<br>"):"<span class='mut'>none</span>";
- set("ft",`<h2 style="display:inline; margin-right:6px;">Matches</h2>${html}`);
-})();
+// 🔹 Matches (Scorebat – free, no key)
+j("https://www.scorebat.com/video-api/v3/").then(d=>{
+  const m=d.response||[];
+  const html=m.slice(0,10).map(x=>`${x.title.replace(' vs ',' ⚽ ')} (${x.competition})`).join(" • ");
+  set("ft",`<h2 style="display:inline; margin-right:6px;">Matches</h2>${html||"<span class='mut'>none</span>"}`);
+});
 
 $("d").onclick=()=>{
   const c=$("content");
