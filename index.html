@@ -92,8 +92,13 @@ function loadSeq(){fNR(feedsX0,'feedListX0');setTimeout(()=>fNR(feedsX1,'feedLis
 loadSeq();
 
 (async()=>{
-const tmdbKey="179d23dc4b4a1ba27263fcc2503d5e3d";
-const footKey="f1637751ac2e41dc8cfbe1f9492c0a4b";                
+// CORS-safe JSON fetch helper – must go before any API call
+const j=async(u,o)=>{try{
+  const p="https://api.allorigins.win/get?url="+encodeURIComponent(u);
+  const r=await fetch(p,o);if(!r.ok)throw 0;
+  const d=await r.json();return JSON.parse(d.contents);
+}catch(e){return null}};
+const tmdbKey="179d23dc4b4a1ba27263fcc2503d5e3d";                
 
 const today=new Date(),
 ymd=today.toISOString().slice(0,10),
@@ -175,18 +180,19 @@ j(`https://musicbrainz.org/ws/2/release/?query=date:${ymd}%20AND%20status:offici
  set("al",`<h2 style="display:inline; margin-right:6px;">Albums</h2>${html}`);
 });
 
-// 🔹 Matches (Scorebat – approximate today's only)
-j("https://www.scorebat.com/video-api/v3/").then(d=>{
-  const m=(d.response||[]).filter(x=>{
-    const dt=new Date(x.date);
-    const now=new Date();
-    return dt.toDateString()===now.toDateString(); // keep today's
-  });
-  const html=m.slice(0,10).map(x=>
-    `<a href="${x.matchviewUrl}" target="_blank">${x.title.replace(' vs ',' ⚽ ')}</a> (${x.competition})`
-  ).join(" • ");
-  set("ft",`<h2 style="display:inline; margin-right:6px;">Matches</h2>${html||"<span class='mut'>none</span>"}`);
-});
+// 🔹 Matches (Scorebat – today's only, CORS-safe)
+(async()=>{
+ try{
+   const proxy="https://api.allorigins.win/get?url="+encodeURIComponent("https://www.scorebat.com/video-api/v3/");
+   const r=await fetch(proxy);
+   const d=await r.json();
+   const data=JSON.parse(d.contents);
+   const now=new Date();
+   const m=(data.response||[]).filter(x=>new Date(x.date).toDateString()===now.toDateString());
+   const html=m.slice(0,10).map(x=>`<a href="${x.matchviewUrl}" target="_blank">${x.title.replace(' vs ',' ⚽ ')}</a> (${x.competition})`).join(" • ");
+   set("ft",`<h2>Matches</h2>${html||"<span class='mut'>none</span>"}`);
+ }catch(e){set("ft","<h2>Matches</h2><span class='mut'>none</span>");}
+})();
      
 })();
 </script></body></html>
