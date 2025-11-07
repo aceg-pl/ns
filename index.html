@@ -139,7 +139,7 @@ $("d").innerHTML=`
     try{
       const c=localStorage.getItem(cacheKey);
       if(c){
-        const {t,lat,lon,tz}=JSON.parse(c);
+        const {t,lat,lon,tz,city}=JSON.parse(c);
         if(Date.now()-t<cacheTime)return{lat,lon,tz};
       }
       const r=await fetch("https://ipapi.co/json/");
@@ -176,7 +176,7 @@ $("d").innerHTML=`
           percent=Math.round(ph*100);
 
     document.getElementById("weather").innerHTML=
-      `${loc.city} ${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
+      `${city} ${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
   })().catch(_=>{
     document.getElementById("weather").textContent="Weather unavailable.";
   });
