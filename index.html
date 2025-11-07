@@ -131,32 +131,40 @@ $("d").innerHTML=`
 `;
 
 (()=>{
-  const lat=53.1235,lon=18.0084,tz="Europe/Warsaw";
-
-  function moonPhase(date){const lp=2551443,now=date/1000;const newMoon=592500;const phase=((now-newMoon)%lp)/lp;return phase<0?phase+1:phase;}
-  function moonIcon(phase){if(phase<0.03||phase>0.97)return"🌑";if(phase<0.25)return"🌒";if(phase<0.27)return"🌓";if(phase<0.47)return"🌔";if(phase<0.53)return"🌕";if(phase<0.75)return"🌖";if(phase<0.77)return"🌗";return"🌘";}
+  const lat=53.1235, lon=18.0084, tz="Europe/Warsaw";
 
   fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=pressure_msl&daily=sunrise,sunset&timezone=${encodeURIComponent(tz)}`)
-  .then(r=>r.json()).then(d=>{
-    const cw=d.current_weather||{},t=cw.temperature??"—",w=cw.windspeed??"—",c=cw.weathercode??0;
-    const icon=c<3?'☀️':c<50?'☁️':c<60?'🌧️':'☔️';
-    const prs=d.hourly.pressure_msl||[],tm=d.hourly.time||[];
-    let nearest=0, minDiff=1e9;
-    for(let i=0;i<times.length;i++){const diff=Math.abs(new Date(times[i]) - now);if(diff < minDiff){ minDiff = diff; nearest = i; }}
-    const p = prs[nearest] ? Math.round(prs[nearest]) : "—";
-    const sr=(d.daily.sunrise||["–"])[0].split("T")[1]?.slice(0,5)||"–";
-    const ss=(d.daily.sunset||["–"])[0].split("T")[1]?.slice(0,5)||"–";
-    const phase=moonPhase(new Date());
-    const moon=moonIcon(phase);
-    const percent=Math.round(phase*100);
-    
+  .then(r=>r.json())
+  .then(d=>{
+    const cw=d.current_weather||{},
+          t=cw.temperature??"—",
+          w=cw.windspeed??"—",
+          c=cw.weathercode??0,
+          icon=c<3?'☀️':c<50?'☁️':c<60?'🌧️':'☔️',
+          prs=d.hourly.pressure_msl||[],
+          times=d.hourly.time||[],
+          now=new Date();
+    let nearest=0,minDiff=1e9;
+    for(let i=0;i<times.length;i++){
+      const diff=Math.abs(new Date(times[i])-now);
+      if(diff<minDiff){minDiff=diff;nearest=i;}
+    }
+    const p=prs[nearest]?Math.round(prs[nearest]):"—",
+          sr=(d.daily.sunrise||["–"])[0].split("T")[1]?.slice(0,5)||"–",
+          ss=(d.daily.sunset||["–"])[0].split("T")[1]?.slice(0,5)||"–",
+          lp=2551443, newMoon=592500,
+          ph=(((now/1000)-newMoon)%lp)/lp<0?(((now/1000)-newMoon)%lp)/lp+1:(((now/1000)-newMoon)%lp)/lp,
+          moon=ph<0.03||ph>0.97?"🌑":ph<0.25?"🌒":ph<0.27?"🌓":ph<0.47?"🌔":ph<0.53?"🌕":ph<0.75?"🌖":ph<0.77?"🌗":"🌘",
+          percent=Math.round(ph*100);
+
     document.getElementById("weather").innerHTML=
-      `${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}-${ss} • ${moon} ${percent}%`;
-  }).catch(_=>{
+      `${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
+  })
+  .catch(_=>{
     document.getElementById("weather").textContent="Weather unavailable.";
   });
 })();
-
+  
 // utility
 const j=async(u,o)=>{try{const r=await fetch(u,o);if(!r.ok)throw 0;return await r.json()}catch(e){return null}}
 const bullets=(arr,max=8,map=x=>x)=>arr&&arr.length?arr.slice(0,max).map(map).join(" • "):"<span class='mut'>none</span>";
