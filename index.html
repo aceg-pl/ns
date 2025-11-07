@@ -18,6 +18,7 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 #datebar h2{display:inline;margin:0 4px 0 0;font-size:14px;color:#007aff}
 #datebar .mut{color:#9CA3AF}
 #datebar #content>div{margin-bottom:6px}
+#d::after{content:"";display:block;clear:both}
 </style></head><body>
 <div class="sticky-header"><div class="sites" id="siteIcons"></div>
 <div id="searchLine" style="position:relative;display:flex;align-items:center;justify-content:center;margin:8px auto 12px auto;max-width:400px;width:100%">
@@ -123,7 +124,30 @@ function getNamesday(){
   const m=d.getMonth(),day=d.getDate()-1;
   return (namesdayArray[m]&&namesdayArray[m][day])?namesdayArray[m][day]:"";
 }
-$("d").innerHTML=`<b>↕️ 📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday()||"<span class='mut'>none</span>"} ↕️</b>`;
+$("d").innerHTML=`
+  <span id="wleft" style="float:left;margin-left:6px;font-weight:400;font-size:13px;"></span>
+  <b>↕️ 📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday()||"<span class='mut'>none</span>"} ↕️</b>
+  <span id="wright" style="float:right;margin-right:6px;font-weight:400;font-size:13px;"></span>
+`;
+
+(()=>{
+  const lat=53.1235,lon=18.0084,tz="Europe/Warsaw";
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=pressure_msl&daily=sunrise,sunset&timezone=${encodeURIComponent(tz)}`)
+  .then(r=>r.json()).then(d=>{
+    const cw=d.current_weather||{},temp=cw.temperature??"?",wind=cw.windspeed??"?",code=cw.weathercode??0;
+    const desc=code<3?'☀️':code<50?'☁️':code<60?'🌧️':'☔️';
+    const pressures=d.hourly.pressure_msl||[],times=d.hourly.time||[];
+    const idx=times.findIndex(t=>t.startsWith(new Date().toISOString().slice(0,13)));
+    const p=idx>=0?Math.round(pressures[idx]):"—";
+    const sr=(d.daily.sunrise||["–"])[0].split("T")[1]?.slice(0,5)||"–";
+    const ss=(d.daily.sunset||["–"])[0].split("T")[1]?.slice(0,5)||"–";
+    document.getElementById("wleft").innerHTML=`${desc} ${temp}°C • 💨${wind}km/h • 🌪️${p}hPa`;
+    document.getElementById("wright").innerHTML=`🌅${sr} • 🌃${ss}`;
+  }).catch(_=>{
+    document.getElementById("wleft").textContent="—";
+    document.getElementById("wright").textContent="";
+  });
+})();
 
 // utility
 const j=async(u,o)=>{try{const r=await fetch(u,o);if(!r.ok)throw 0;return await r.json()}catch(e){return null}}
