@@ -150,7 +150,7 @@ $("d").innerHTML=`
     const percent=Math.round(phase*100);
     
     document.getElementById("weather").innerHTML=
-      `${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr} • 🌃 ${ss} • ${moon} ${percent}%`;
+      `${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}-${ss} • ${moon} ${percent}%`;
   }).catch(_=>{
     document.getElementById("weather").textContent="Weather unavailable.";
   });
