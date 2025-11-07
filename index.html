@@ -175,17 +175,18 @@ j(`https://musicbrainz.org/ws/2/release/?query=date:${ymd}%20AND%20status:offici
  set("al",`<h2 style="display:inline; margin-right:6px;">Albums</h2>${html}`);
 });
 
-// 🔹 Matches (Scorebat – free, no key)
+// 🔹 Matches (Scorebat – approximate today's only)
 j("https://www.scorebat.com/video-api/v3/").then(d=>{
-  const m=d.response||[];
-  const html=m.slice(0,10).map(x=>`${x.title.replace(' vs ',' ⚽ ')} (${x.competition})`).join(" • ");
+  const m=(d.response||[]).filter(x=>{
+    const dt=new Date(x.date);
+    const now=new Date();
+    return dt.toDateString()===now.toDateString(); // keep today's
+  });
+  const html=m.slice(0,10).map(x=>
+    `<a href="${x.matchviewUrl}" target="_blank">${x.title.replace(' vs ',' ⚽ ')}</a> (${x.competition})`
+  ).join(" • ");
   set("ft",`<h2 style="display:inline; margin-right:6px;">Matches</h2>${html||"<span class='mut'>none</span>"}`);
 });
-
-$("d").onclick=()=>{
-  const c=$("content");
-  c.style.display=c.style.display==="none"?"block":"none";
-};
      
 })();
 </script></body></html>
