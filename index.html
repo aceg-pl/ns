@@ -144,7 +144,7 @@ $("d").innerHTML=`
       }
       const r=await fetch("https://ipapi.co/json/");
       const d=await r.json();
-      const obj={lat:d.latitude,lon:d.longitude,tz:d.timezone||"Europe/Warsaw",city:d.city,t:Date.now()};
+      const obj={lat:d.latitude,lon:d.longitude,tz:d.timezone||"Europe/Warsaw",city:d.city||"—",t:Date.now()};
       localStorage.setItem(cacheKey,JSON.stringify(obj));
       return obj;
     }catch{
@@ -154,14 +154,25 @@ $("d").innerHTML=`
 
   (async()=>{
     const {lat,lon,tz,city}=await getLocation();
-    const proxy="https://api.allorigins.win/get?url=";
+
+    // direct first, fallback to codetabs proxy if fails
+    async function safeFetch(u){
+      try{
+        const r=await fetch(u);
+        if(!r.ok)throw 0;
+        return await r.json();
+      }catch{
+        const r2=await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`);
+        return await r2.json();
+      }
+    }
+
     const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=pressure_msl&daily=sunrise,sunset&timezone=${encodeURIComponent(tz)}`;
+    const d=await safeFetch(url);
 
-    const r=await fetch(proxy+encodeURIComponent(url));
-    const data=await r.json();
-    const d=JSON.parse(data.contents);
+    if(!d||!d.current_weather){document.getElementById("weather").textContent="Weather unavailable.";return;}
 
-    const cw=d.current_weather||{},
+    const cw=d.current_weather,
           t=cw.temperature??"—",
           w=cw.windspeed??"—",
           c=cw.weathercode??0,
@@ -185,7 +196,7 @@ $("d").innerHTML=`
           percent=Math.round(ph*100);
 
     document.getElementById("weather").innerHTML=
-      `${city} • ${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
+      `<b>${city}</b> • ${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
   })().catch(_=>{
     document.getElementById("weather").textContent="Weather unavailable.";
   });
