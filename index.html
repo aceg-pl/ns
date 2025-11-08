@@ -24,7 +24,9 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 <div class="sticky-header">
   <div style="display:flex;align-items:flex-start;justify-content:center;gap:10px;flex-wrap:wrap">
     <!-- LEFT SLOT (optional, keep empty or add chart later) -->
-    <div id="pressureChart" style="flex:0 0 auto"></div>
+    <div id="pressureChart" style="flex:0 0 auto;width:180px;height:85px;position:relative;border-radius:8px;overflow:hidden;background:#ccc;box-shadow:0 0 4px rgba(0,0,0,.1)">
+    <div style="position:absolute;top:4px;right:6px;font-size:9px;font-weight:600;color:#000;background:rgba(255,255,255,.7);padding:1px 4px;border-radius:3px;line-height:1">PRESSURE ±7d</div>
+    </div>
 
     <!-- CENTER BLOCK: sites + search -->
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center">
@@ -262,8 +264,7 @@ $("d").onclick=()=>{
 <script>
 setTimeout(()=>{
   if(window.pressurePNG){
-    document.getElementById("pressureChart").innerHTML=
-      `<img src="${window.pressurePNG}" style="width:180px;height:85px;border-radius:8px;background:#ccc;box-shadow:0 0 4px rgba(0,0,0,.1)">`;
+    document.getElementById("pressureChart").innerHTML+=`<img src="${window.pressurePNG}" style="width:100%;height:100%;border-radius:8px">`;
   }
 },1500);
 </script>
