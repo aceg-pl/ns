@@ -20,9 +20,13 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 #datebar #content>div{margin-bottom:6px}
 #d::after{content:"";display:block;clear:both}
 </style></head><body>
+  
 <div class="sticky-header">
   <div style="display:flex;align-items:flex-start;justify-content:center;gap:10px;flex-wrap:wrap">
+    <!-- LEFT SLOT (optional, keep empty or add chart later) -->
     <div id="pressureChart" style="flex:0 0 auto"></div>
+
+    <!-- CENTER BLOCK: sites + search -->
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center">
       <div class="sites" id="siteIcons"></div>
       <div id="searchLine" style="position:relative;display:flex;align-items:center;justify-content:center;margin:8px auto 12px auto;max-width:400px;width:100%">
@@ -32,6 +36,13 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
           <div id="topArrow" title="Scroll to top">⏫</div>
         </div>
       </div>
+    </div>
+
+    <!-- RIGHT SLOT: LIVE IR IMAGE -->
+    <div id="irLive" style="flex:0 0 auto;width:180px;height:85px;border-radius:8px;overflow:hidden;box-shadow:0 0 4px rgba(0,0,0,.1)">
+      <img src="https://neige.meteociel.fr/satellite/anim_ir.gif"
+           alt="Europe IR clouds"
+           style="width:180px;height:85px;object-fit:cover;border-radius:8px">
     </div>
   </div>
 </div>
