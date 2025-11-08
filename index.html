@@ -248,7 +248,9 @@ j(`https://musicbrainz.org/ws/2/release/?query=date:${ymd}%20AND%20status:offici
 // 🔹 Matches (Scorebat – free, no key)
 j("https://www.scorebat.com/video-api/v3/").then(d=>{
   const m=d.response||[];
-  const html=m.slice(0,10).map(x=>`${x.title.replace(' vs ',' ⚽ ')} (${x.competition})`).join(" • ");
+  const html=m.slice(0,10)
+    .map(x=>x.title.replace(' vs ',' ⚽ '))
+    .join(" • ");
   set("ft",`<h2 style="display:inline; margin-right:6px;">Matches</h2>${html||"<span class='mut'>none</span>"}`);
 });
 
