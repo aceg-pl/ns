@@ -38,12 +38,19 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
       </div>
     </div>
 
-    <!-- RIGHT SLOT: LIVE IR IMAGE (centered on Poland) -->
-    <div id="irLive" style="flex:0 0 auto;width:180px;height:85px;border-radius:8px;overflow:hidden;box-shadow:0 0 4px rgba(0,0,0,.1)">
-     <img src="https://api.sat24.com/animated/EU/infraPoland/1/Central%20European%20Standard%20Time/5503287"
-       alt="Poland IR clouds"
-       style="width:180px;height:85px;object-fit:cover;border-radius:8px">
-    </div>
+    <!-- RIGHT SLOT: LIVE IR IMAGE (cropped to show Poland area) -->
+  <div id="irLive"
+     style="flex:0 0 auto;width:180px;height:85px;overflow:hidden;
+            border-radius:8px;box-shadow:0 0 4px rgba(0,0,0,.1);">
+  <img src="https://neige.meteociel.fr/satellite/anim_ir.gif"
+       alt="Europe IR clouds"
+       style="position:relative;
+              width:360px;
+              height:auto;
+              object-fit:none;
+              transform:translate(-180px,-0px);
+              border-radius:8px;">
+   </div>
   </div>
 </div>
 
