@@ -11,6 +11,7 @@ h1{margin-bottom:10px}.sites{margin-bottom:12px;text-align:center}
 .feed-item a{text-decoration:none;color:#007aff}
 .feed-item span{color:#666;margin-left:4px;font-size:12px}
 .scroll-pane{max-height:240px;overflow-y:auto;border:1px solid #ddd;border-radius:8px;background:#fff;margin:0 16px 8px 16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);padding:0 6px}
+.scroll-pane.c{display:none}
 .feed-block { margin:0 0 12px 0; }
 .block-title{position:relative;padding-right:28px}
 .mv{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:12px;cursor:pointer;user-select:none;display:flex;gap:4px}
@@ -236,6 +237,14 @@ document.querySelectorAll('.mv').forEach(m => {
     e.stopPropagation();
     const next = block.nextElementSibling;
     if (next) block.parentNode.insertBefore(next, block);
+  };
+});
+
+document.querySelectorAll(".block-title").forEach(t=>{
+  t.style.cursor="pointer";
+  t.onclick=()=>{
+    const p=t.nextElementSibling;
+    p.classList.toggle("c");
   };
 });
 
