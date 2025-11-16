@@ -11,6 +11,9 @@ h1{margin-bottom:10px}.sites{margin-bottom:12px;text-align:center}
 .feed-item a{text-decoration:none;color:#007aff}
 .feed-item span{color:#666;margin-left:4px;font-size:12px}
 .scroll-pane{max-height:240px;overflow-y:auto;border:1px solid #ddd;border-radius:8px;background:#fff;margin:0 16px 8px 16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);padding:0 6px}
+.feed-block { margin-bottom: 16px; }
+.mv { float:right; font-size:13px; cursor:pointer; user-select:none; }
+.mv span { padding: 0 4px; }
 button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 #datebar{background:#fff;color:#000;font:14px/1.35 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial;border:1px solid #ddd;border-radius:8px;margin:6px 16px 12px;padding:4px 10px 6px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 #datebar #d{text-align:center;font-weight:600;cursor:pointer;padding:3px 0 4px;color:#000}
@@ -65,12 +68,35 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
   </div>
 </div>
 
-<div class="block-title">📰 Wiadomości</div><div class="scroll-pane"><div class="feed-list" id="feedListX0">Loading…</div></div>
-<div class="block-title">⚽️ Sport</div><div class="scroll-pane"><div class="feed-list" id="feedListX1">Loading…</div></div>
-<div class="block-title">🖥️ Tech</div><div class="scroll-pane"><div class="feed-list" id="feedListX2">Loading…</div></div>
-<div class="block-title">🌎 News</div><div class="scroll-pane"><div class="feed-list" id="feedListX3">Loading…</div></div>
-<div class="block-title">🎬 AV</div><div class="scroll-pane"><div class="feed-list" id="feedListX4">Loading…</div></div>
-<div class="block-title">✈️ Travel</div><div class="scroll-pane"><div class="feed-list" id="feedListX5">Loading…</div></div>
+<div class="feed-block">
+  <div class="block-title">📰 Wiadomości <span class="mv"></span></div>
+  <div class="scroll-pane"><div class="feed-list" id="feedListX0">Loading…</div></div>
+</div>
+
+<div class="feed-block">
+  <div class="block-title">⚽️ Sport <span class="mv"></span></div>
+  <div class="scroll-pane"><div class="feed-list" id="feedListX1">Loading…</div></div>
+</div>
+
+<div class="feed-block">
+  <div class="block-title">🖥️ Tech <span class="mv"></span></div>
+  <div class="scroll-pane"><div class="feed-list" id="feedListX2">Loading…</div></div>
+</div>
+
+<div class="feed-block">
+  <div class="block-title">🌎 News <span class="mv"></span></div>
+  <div class="scroll-pane"><div class="feed-list" id="feedListX3">Loading…</div></div>
+</div>
+
+<div class="feed-block">
+  <div class="block-title">🎬 AV <span class="mv"></span></div>
+  <div class="scroll-pane"><div class="feed-list" id="feedListX4">Loading…</div></div>
+</div>
+
+<div class="feed-block">
+  <div class="block-title">✈️ Travel <span class="mv"></span></div>
+  <div class="scroll-pane"><div class="feed-list" id="feedListX5">Loading…</div></div>
+</div>
 
 <script>
 const sites=[{url:'https://www.onet.pl',d:'onet.pl'},{url:'https://www.wp.pl',d:'wp.pl'},{url:'https://www.interia.pl',d:'interia.pl'},{url:'https://www.gazeta.pl',d:'gazeta.pl'},{url:'https://www.polsatnews.pl',d:'polsatnews.pl'},{url:'https://expressbydgoski.pl',d:'expressbydgoski.pl'},{url:'https://www.rp.pl',d:'rp.pl'},{url:'https://www.newsweek.pl/lista-wydan',d:'newsweek.pl'},{url:'https://edition.cnn.com',d:'cnn.com'},{url:'https://www.bbc.com',d:'bbc.com'},{url:'https://www.reuters.com',d:'reuters.com'},{url:'https://www.flashscore.pl',d:'flashscore.pl'}];
@@ -194,7 +220,24 @@ $("d").innerHTML=`
     document.getElementById("weather").textContent="Weather unavailable.";
   });
 })();
-  
+
+document.querySelectorAll('.mv').forEach(m => {
+  m.innerHTML = '<span class="up">▲</span><span class="down">▼</span>';
+  const block = m.closest('.feed-block');
+
+  m.querySelector('.up').onclick = e => {
+    e.stopPropagation();
+    const prev = block.previousElementSibling;
+    if (prev) block.parentNode.insertBefore(block, prev);
+  };
+
+  m.querySelector('.down').onclick = e => {
+    e.stopPropagation();
+    const next = block.nextElementSibling;
+    if (next) block.parentNode.insertBefore(next, block);
+  };
+});
+
 // utility
 const j=async(u,o)=>{try{const r=await fetch(u,o);if(!r.ok)throw 0;return await r.json()}catch(e){return null}}
 const bullets=(arr,max=8,map=x=>x)=>arr&&arr.length?arr.slice(0,max).map(map).join(" • "):"<span class='mut'>none</span>";
@@ -260,7 +303,7 @@ $("d").onclick=()=>{
   const c=$("content");
   c.style.display=c.style.display==="none"?"block":"none";
 };
-     
+   
 })();
 </script>
   
