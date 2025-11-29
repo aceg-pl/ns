@@ -133,10 +133,12 @@ function fNR(feeds,id,page=0){
    if(!r.ok)return[];
    let p=new DOMParser(),x=p.parseFromString(r.t,'application/xml');
    return Array.from(x.querySelectorAll('item,entry')).map(e=>{
-     let t=e.querySelector('title')?.textContent||'No title',
-         l=e.querySelector('link')?.textContent||e.querySelector('link')?.getAttribute('href')||'#',
-         d=e.querySelector('pubDate')?.textContent||e.querySelector('updated')?.textContent||new Date().toISOString();
-     return {t,l,d:new Date(d)};
+     let t=(e.querySelector('title')?.textContent||'No title')
+        .replace(/�w/g,"ów").replace(/�l/g,"ł").replace(/�a/g,"ą").replace(/�e/g,"ę")
+        .replace(/�s/g,"ś").replace(/�c/g,"ć").replace(/�z/g,"ż").replace(/�x/g,"ź").replace(/�n/g,"ń"),
+    l=e.querySelector('link')?.textContent||e.querySelector('link')?.getAttribute('href')||'#',
+    d=e.querySelector('pubDate')?.textContent||e.querySelector('updated')?.textContent||new Date().toISOString();
+return {t,l,d:new Date(d)};
    });
  }))).then(all=>{
    let items=all.flat().sort((a,b)=>b.d-a.d);
