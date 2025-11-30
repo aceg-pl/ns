@@ -199,6 +199,7 @@ function getNamesday(){
   
 $("d").innerHTML=`
   <b>↕️ 📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday()||"<span class='mut'>none</span>"} ↕️</b>
+  <div id="quote" style="text-align:center;font-style:italic;font-size:13px;color:#666;margin:4px 0;font-weight:400;max-width:400px"></div>
   <div id="weather" style="margin-top:4px;font-weight:400;font-size:13px;color:#000"></div>
 `;
 
@@ -278,6 +279,17 @@ j(`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${MM}/${DD}`).th
  set("otd",`<h2 style="display:inline; margin-right:6px;">On this day</h2>${html||"<span class='mut'>none</span>"}`);
 });
 
+// 🔹 Quote of the Day
+fetch('https://zenquotes.io/api/today')
+  .then(r=>r.json())
+  .then(d=>{
+    if(d&&d[0]){
+      const q=d[0].q, a=d[0].a;
+      document.getElementById("quote").innerHTML=`"${q}" <span style="font-weight:500">— ${a}</span>`;
+    }
+  })
+  .catch(_=>document.getElementById("quote").innerHTML="<span class='mut'>Quote unavailable</span>");
+  
 // 🔹 Movies (bold + extended)
 (async()=>{
  if(!tmdbKey){set("mv","<h2>Movies</h2><span class='mut'>add TMDb key</span>");return;}
