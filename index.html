@@ -297,19 +297,24 @@ j(`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${MM}/${DD}`).th
 });
 
 // 🔹 Quote of the Day
-fetch('https://zenquotes.io/api/today?cors=1')
-  .then(r=>r.json())
-  .then(d=>{
-    if(d&&d[0]&&d[0].q&&d[0].a){
-      const q=d[0].q.replace(/"/g,'&quot;'), a=d[0].a;
-      document.getElementById("quote").innerHTML=
-        `<i>"${q}"</i> <span style="font-weight:500">— ${a}</span>`;
-    } else {
-      document.getElementById("quote").innerHTML='<span class="mut">Quote unavailable</span>';
+fetch("https://type.fit/api/quotes")
+  .then(r => r.json())
+  .then(arr => {
+    if (!arr || !arr.length) {
+      document.getElementById("quote").innerHTML =
+        '<span class="mut">Quote unavailable</span>';
+      return;
     }
+    const q = arr[Math.floor(Math.random()*arr.length)];
+    const text = q.text || "Quote unavailable";
+    const author = q.author || "Unknown";
+
+    document.getElementById("quote").innerHTML =
+      `<i>"${text.replace(/"/g,'&quot;')}"</i> <span style="font-weight:500">— ${author}</span>`;
   })
-  .catch(e=>{
-    document.getElementById("quote").innerHTML='<span class="mut">Quote unavailable</span>';
+  .catch(() => {
+    document.getElementById("quote").innerHTML =
+      '<span class="mut">Quote unavailable</span>';
   });
   
 // 🔹 Movies (bold + extended)
