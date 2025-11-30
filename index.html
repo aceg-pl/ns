@@ -230,8 +230,23 @@ $("d").innerHTML=`
           moon=ph<0.03||ph>0.97?"🌑":ph<0.25?"🌒":ph<0.27?"🌓":ph<0.47?"🌔":ph<0.53?"🌕":ph<0.75?"🌖":ph<0.77?"🌗":"🌘",
           percent=Math.round(ph*100);
 
-    document.getElementById("weather").innerHTML=
-      `${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%`;
+const sunsetTime=new Date((d.daily.sunset||["–"])[0]);
+const checkTime=new Date(sunsetTime.getTime() + 60*60*1000); // 1hr after sunset
+const hourlyTime=d.hourly.time||[], hourlyWeather=d.hourly.weathercode||[];
+let clearTonight=false;
+for(let i=0; i<hourlyTime.length; i++){
+  const diff=Math.abs(new Date(hourlyTime[i])-checkTime);
+  if(diff<30*60*1000){ // within 30min window
+    const wc=hourlyWeather[i];
+    clearTonight=wc===0 || wc===1; // clear skies (0-1)
+    break;
+  }
+}
+window.clearTonight=clearTonight; // make global for telescope icon
+
+document.getElementById("weather").innerHTML=
+  `${icon} ${t}°C • 💨${w}km/h • 🌪️${p}hPa • 🌅 ${sr}–${ss} • ${moon} ${percent}%${clearTonight?' 🔭':''}`;
+
   })
   .catch(_=>{
     document.getElementById("weather").textContent="Weather unavailable.";
