@@ -296,21 +296,22 @@ j(`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${MM}/${DD}`).th
  set("otd",`<h2 style="display:inline; margin-right:6px;">On this day</h2>${html||"<span class='mut'>none</span>"}`);
 });
 
-// 🔹 Quote of the Day (ZenQuotes)
-fetch("https://zenquotes.io/api/random")
-  .then(r => r.json())
-  .then(arr => {
-    const q = Array.isArray(arr) && arr[0] ? arr[0] : null;
-    if (!q) throw 0;
-    const text = (q.q || "").replace(/"/g, "&quot;");
-    const author = q.a || "Unknown";
-    document.getElementById("quote").innerHTML =
-      `<i>"${text}"</i> <span style="font-weight:500">— ${author}</span>`;
-  })
-  .catch(() => {
-    document.getElementById("quote").innerHTML =
-      '<span class="mut">Quote unavailable</span>';
-  });
+// 🔹 Quote of the Day (API-Ninjas)
+fetch("https://api.api-ninjas.com/v2/quoteoftheday", {
+  headers: { "X-Api-Key": "YOUR_API_NINJAS_KEY_HERE" }
+})
+.then(r => r.json())
+.then(q => {
+  if (!q || !q.quote) throw 0;
+  const text = q.quote.replace(/"/g, "&quot;");
+  const author = q.author || "Unknown";
+  document.getElementById("quote").innerHTML =
+    `<i>"${text}"</i> <span style="font-weight:500">— ${author}</span>`;
+})
+.catch(() => {
+  document.getElementById("quote").innerHTML =
+    '<span class="mut">Quote unavailable</span>';
+});
   
 // 🔹 Movies (bold + extended)
 (async()=>{
