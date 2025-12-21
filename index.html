@@ -47,6 +47,20 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
       </div>
     </div>
 
+<div id="markets"
+ style="margin-top:6px;
+        padding-top:4px;
+        border-top:1px dashed #ddd;
+        font-size:12.5px;
+        text-align:center">
+</div>
+
+<div id="holidays"
+ style="margin-top:4px;
+        font-size:12px;
+        text-align:center">
+</div>
+    
     <!-- RIGHT SLOT: LIVE IR IMAGE (show top part) -->
 <div id="irLive"
      style="flex:0 0 auto;width:180px;height:85px;
@@ -357,7 +371,50 @@ $("d").onclick=()=>{
   const c=$("content");
   c.style.display=c.style.display==="none"?"block":"none";
 };
-   
+
+fetch("https://api.metals.live/v1/spot")
+.then(r=>r.json())
+.then(d=>{
+  const m=Object.fromEntries(d.map(x=>[x[0],x[1]]));
+
+  const USDPLN=m.USDPLN||null;
+  const EURPLN=USDPLN&&m.USDEUR?USDPLN*m.USDEUR:null;
+  const GBPPLN=USDPLN&&m.USDGBP?USDPLN*m.USDGBP:null;
+
+  markets.innerHTML=
+   `💱 EUR/PLN ${EURPLN?.toFixed(2)||"—"} • 
+    USD/PLN ${USDPLN?.toFixed(2)||"—"} • 
+    GBP/PLN ${GBPPLN?.toFixed(2)||"—"}<br>
+    🪙 Au ${m.gold?.toFixed(0)||"—"}$ • 
+    Ag ${m.silver?.toFixed(2)||"—"}$ • 
+    Cu ${m.copper?.toFixed(2)||"—"}$ • 
+    Pd ${m.palladium?.toFixed(0)||"—"}$`;
+})
+.catch(()=>{
+  markets.innerHTML="<span class='mut'>Markets unavailable</span>";
+});
+
+const Y=today.getFullYear(), iso=ymd;
+
+const countries={PL:"🇵🇱",CZ:"🇨🇿",AT:"🇦🇹",DE:"🇩🇪",FR:"🇫🇷",IT:"🇮🇹",GB:"🇬🇧",US:"🇺🇸",MA:"🇲🇦",IN:"🇮🇳",CN:"🇨🇳",JP:"🇯🇵",BR:"🇧🇷"};
+
+Promise.all(
+ Object.keys(countries).map(c=>
+  fetch(`https://date.nager.at/api/v3/PublicHolidays/${Y}/${c}`)
+   .then(r=>r.json())
+   .then(a=>a.filter(h=>h.date===iso)
+     .map(h=>`${countries[c]} ${h.localName}`))
+   .catch(()=>[])
+ )
+).then(all=>{
+  const h=all.flat();
+  holidays.innerHTML=
+   h.length
+    ? `🎌 Today: <span style="display:inline-block;max-width:100%;line-height:1.35">${h.join(" • ")}</span>`
+    : `<span class='mut'>No major public holidays today</span>`;
+});
+
+  
 })();
 </script>
   
