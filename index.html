@@ -297,21 +297,16 @@ j(`https://api.wikimedia.org/feed/v1/wikipedia/en/onthisday/all/${MM}/${DD}`).th
 });
 
 // 🔹 Quote of the Day (API-Ninjas)
-fetch("https://api.api-ninjas.com/v2/quoteoftheday", {
-  headers: { "X-Api-Key": "CQ8HdR3vNr2ipN09Y6/z1Q==RclBA6K6D3CHeeDX" }
+fetch("https://api.api-ninjas.com/v2/quoteoftheday",{
+  headers:{ "X-Api-Key":"CQ8HdR3vNr2ipN09Y6/z1Q==RclBA6K6D3CHeeDX" }
 })
-.then(r => r.json())
-.then(q => {
-  if (!q || !q.quote) throw 0;
-  const text = q.quote.replace(/"/g, "&quot;");
-  const author = q.author || "Unknown";
-  document.getElementById("quote").innerHTML =
-    `<i>"${text}"</i> <span style="font-weight:500">— ${author}</span>`;
+.then(r=>r.json())
+.then(a=>{
+  a=a&&a[0];
+  if(!a||!a.quote)throw 0;
+  quote.innerHTML=`<i>"${a.quote.replace(/"/g,"&quot;")}"</i> <span style="font-weight:500">— ${a.author||"Unknown"}</span>`;
 })
-.catch(() => {
-  document.getElementById("quote").innerHTML =
-    '<span class="mut">Quote unavailable</span>';
-});
+.catch(()=>quote.innerHTML='<span class="mut">Quote unavailable</span>');
   
 // 🔹 Movies (bold + extended)
 (async()=>{
