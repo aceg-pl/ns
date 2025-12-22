@@ -306,7 +306,7 @@ fetch("https://api.api-ninjas.com/v2/quoteoftheday",{
 .then(a=>{
   a=a&&a[0];
   if(!a||!a.quote)throw 0;
-  quote.innerHTML=`<i>"${a.quote.replace(/"/g,"&quot;")}"</i> <span style="font-weight:500">— ${a.author||"Unknown"}</span>`;
+  quote.innerHTML=`<i>"${a.quote.replace(/"/g,"&quot;")}"</i> <a style="font-weight:500">— ${a.author||"Unknown"}</a>`;
 })
 .catch(()=>quote.innerHTML='<span class="mut">Quote unavailable</span>');
   
