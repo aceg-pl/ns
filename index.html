@@ -64,8 +64,7 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 
 <div id="datebar">
   <div id="d"></div>
-  <div id="markets" style="margin-top:6px;padding-top:4px;border-top:1px dashed #ddd;font-size:12.5px;text-align:center"></div>
-  <div id="holidays" style="margin-top:4px;font-size:12px;text-align:center"></div>
+  <div id="markets" style="margin-top:6px;padding-top:4px;border-top:1px dashed #ddd;font-size:12.5px;text-align:center"></div><a> | </a><div id="holidays" style="margin-top:4px;font-size:12px;text-align:center"></div>
   <div id="content" style="display:none;">
     <div id="otd"><h2>On this day</h2><div class="mut">loading…</div></div>
     <div id="mv"><h2>Movies</h2><div class="mut">loading…</div></div>
@@ -306,7 +305,7 @@ fetch("https://api.api-ninjas.com/v2/quoteoftheday",{
 .then(a=>{
   a=a&&a[0];
   if(!a||!a.quote)throw 0;
-  quote.innerHTML=`<i>"${a.quote.replace(/"/g,"&quot;")}"</i> <a style="font-weight:500">— ${a.author||"Unknown"}</a>`;
+  quote.innerHTML=`<i>"${a.quote.replace(/"/g,"&quot;")}"</i> <span style="font-weight:500">— ${a.author||"Unknown"}</span>`;
 })
 .catch(()=>quote.innerHTML='<span class="mut">Quote unavailable</span>');
   
