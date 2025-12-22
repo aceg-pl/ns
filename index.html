@@ -417,7 +417,7 @@ Promise.all(
 m.forEach(([t,id])=>{
  let b=document.createElement('button');
  b.textContent=t;
- b.style='padding:6px 10px;border-radius:10px;border:1px solid #ccc;background:linear-gradient(#fff,#e9e9e9);box-shadow:0 2px 4px rgba(0,0,0,.15);font-size:14px;cursor:pointer';
+ b.style='padding:3px 6px;border-radius:7px;border:1px solid #ccc;background:linear-gradient(#fff,#ececec);box-shadow:0 1px 2px rgba(0,0,0,.15);font-size:12px;cursor:pointer';
  b.onclick=()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});
  c.appendChild(b);
 });
