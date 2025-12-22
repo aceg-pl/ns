@@ -38,6 +38,7 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
     <!-- CENTER BLOCK: sites + search -->
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center">
       <div class="sites" id="siteIcons"></div>
+      <div id="jumpBtns" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px"></div>
       <div id="searchLine" style="position:relative;display:flex;align-items:center;justify-content:center;margin:8px auto 12px auto;max-width:400px;width:100%">
         <input type="search" id="titleSearch" placeholder="Search News..." style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc;font-size:14px;box-sizing:border-box">
         <div id="scrollButtons" style="position:absolute;right:4px;display:flex;gap:8px;user-select:none;font-size:20px;cursor:pointer">
@@ -413,7 +414,8 @@ Promise.all(
 (()=>{const m=[
  ['📰','feedListX0'],['⚽️','feedListX1'],['🖥️','feedListX2'],['🌎','feedListX3'],
  ['🎬','feedListX4'],['✈️','feedListX5'],['🤖','feedListX6'],['📚','feedListX7'],['🛒','feedListX8']
-],c=document.getElementById('jumpBtns');
+],c=document.createElement('div');
+c.style='display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:6px 0';
 m.forEach(([t,id])=>{
  let b=document.createElement('button');
  b.textContent=t;
@@ -421,6 +423,7 @@ m.forEach(([t,id])=>{
  b.onclick=()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});
  c.appendChild(b);
 });
+siteIcons.parentNode.appendChild(c);
 })();
 
   
