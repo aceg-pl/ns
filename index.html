@@ -46,20 +46,6 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
         </div>
       </div>
     </div>
-
-<div id="markets"
- style="margin-top:6px;
-        padding-top:4px;
-        border-top:1px dashed #ddd;
-        font-size:12.5px;
-        text-align:center">
-</div>
-
-<div id="holidays"
- style="margin-top:4px;
-        font-size:12px;
-        text-align:center">
-</div>
     
     <!-- RIGHT SLOT: LIVE IR IMAGE (show top part) -->
 <div id="irLive"
@@ -78,6 +64,8 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 
 <div id="datebar">
   <div id="d"></div>
+  <div id="markets" style="margin-top:6px;padding-top:4px;border-top:1px dashed #ddd;font-size:12.5px;text-align:center"></div>
+  <div id="holidays" style="margin-top:4px;font-size:12px;text-align:center"></div>
   <div id="content" style="display:none;">
     <div id="otd"><h2>On this day</h2><div class="mut">loading…</div></div>
     <div id="mv"><h2>Movies</h2><div class="mut">loading…</div></div>
@@ -150,7 +138,7 @@ function fNR(feeds,id,page=0){
    let p=new DOMParser(),x=p.parseFromString(r.t,'application/xml');
    return Array.from(x.querySelectorAll('item,entry')).map(e=>{
      let t=(e.querySelector('title')?.textContent||'No title')
-        .replace(/�w/g,"ów").replace(/�l/g,"ł").replace(/�a/g,"ą").replace(/�e/g,"ę")
+        .replace(/�w/g,"ó").replace(/�l/g,"ł").replace(/�a/g,"ą").replace(/�e/g,"ę")
         .replace(/�s/g,"ś").replace(/�c/g,"ć").replace(/�z/g,"ż").replace(/�x/g,"ź").replace(/�n/g,"ń"),
     l=e.querySelector('link')?.textContent||e.querySelector('link')?.getAttribute('href')||'#',
     d=e.querySelector('pubDate')?.textContent||e.querySelector('updated')?.textContent||new Date().toISOString();
