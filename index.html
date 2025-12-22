@@ -115,6 +115,11 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
   <div class="scroll-pane"><div class="feed-list" id="feedListX7">Loading…</div></div>
 </div>
 
+<div class="feed-block">
+  <div class="block-title">🛒 Deals ↕️<span class="mv"></span></div>
+  <div class="scroll-pane"><div class="feed-list" id="feedListX8">Loading…</div></div>
+</div>
+
 <script>
 const sites=[{url:'https://www.onet.pl',d:'onet.pl'},{url:'https://www.wp.pl',d:'wp.pl'},{url:'https://www.interia.pl',d:'interia.pl'},{url:'https://www.gazeta.pl',d:'gazeta.pl'},{url:'https://www.polsatnews.pl',d:'polsatnews.pl'},{url:'https://expressbydgoski.pl',d:'expressbydgoski.pl'},{url:'https://www.rp.pl',d:'rp.pl'},{url:'https://www.newsweek.pl/lista-wydan',d:'newsweek.pl'},{url:'https://edition.cnn.com',d:'cnn.com'},{url:'https://www.bbc.com',d:'bbc.com'},{url:'https://www.reuters.com',d:'reuters.com'},{url:'https://www.flashscore.pl',d:'flashscore.pl'}];
 const siteIcons=document.getElementById('siteIcons');
@@ -127,6 +132,7 @@ const feedsX4=[{url:'https://eol-feeds.eonline.com/rssfeed/us/top_stories'},{url
 const feedsX5=[{url:'https://www.wakacyjnipiraci.pl/feed'},{url:'https://www.urlaubspiraten.de/feed'},{url:'https://www.urlaubspiraten.at/feed'},{url:'https://www.piratinviaggio.it/feed'},{url:'https://www.viajerospiratas.es/feed'},{url:'https://www.voyagespirates.fr/feed'},{url:'https://www.vakantiepiraten.nl/feed'},{url:'https://www.holidaypirates.com/feed'}];
 const feedsX6=[{url:'https://feeds.arstechnica.com/arstechnica/technology-lab'},{url:'https://techcrunch.com/tag/artificial-intelligence/feed/'},{url:'https://www.technologyreview.com/feed/'},{url:'https://venturebeat.com/category/ai/feed/'},{url:'https://www.zdnet.com/topic/artificial-intelligence/rss.xml'}];
 const feedsX7=[{url:'http://rss.swiatczytnikow.pl/SwiatCzytnikow'}];
+const feedsX8=[{url:'https://www.pepper.pl/rss/wszystkie'},{url:'https://www.mydealz.de/rss/alles'},{url:'https://www.hotukdeals.com/rss/new'},{url:'https://www.dealabs.com/rss/tous'},{url:'https://www.chollometro.com/rss/nuevos'}];
 const proxy1='https://api.allorigins.win/get?url=',proxy2='https://api.codetabs.com/v1/proxy?quest=';
 
 function fR(f,r=1){return fetch(proxy1+encodeURIComponent(f.url)).then(x=>x.json()).then(d=>({ok:1,t:d.contents})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''})}
@@ -166,7 +172,7 @@ titleSearch.oninput=()=>{let f=titleSearch.value.toLowerCase();document.querySel
 pageDownArrow.onclick=()=>scrollBy({top:innerHeight,behavior:'smooth'});
 topArrow.onclick=()=>scrollTo({top:0,behavior:'smooth'});
 
-function loadSeq(){fNR(feedsX0,'feedListX0');setTimeout(()=>fNR(feedsX1,'feedListX1'),400);setTimeout(()=>fNR(feedsX2,'feedListX2'),800);setTimeout(()=>fNR(feedsX3,'feedListX3'),1200);setTimeout(()=>fNR(feedsX4,'feedListX4'),1600);setTimeout(()=>fNR(feedsX5,'feedListX5'),2000);setTimeout(()=>fNR(feedsX6,'feedListX6'),2400);setTimeout(()=>fNR(feedsX7,'feedListX7'),2800);}
+function loadSeq(){fNR(feedsX0,'feedListX0');setTimeout(()=>fNR(feedsX1,'feedListX1'),400);setTimeout(()=>fNR(feedsX2,'feedListX2'),800);setTimeout(()=>fNR(feedsX3,'feedListX3'),1200);setTimeout(()=>fNR(feedsX4,'feedListX4'),1600);setTimeout(()=>fNR(feedsX5,'feedListX5'),2000);setTimeout(()=>fNR(feedsX6,'feedListX6'),2400);setTimeout(()=>fNR(feedsX7,'feedListX7'),2800);setTimeout(()=>fNR(feedsX8,'feedListX8'),3200);}
 loadSeq();
 
 (async()=>{
