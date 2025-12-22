@@ -159,7 +159,11 @@ return {t,l,d:new Date(d)};
    });
  }))).then(all=>{
    let items=all.flat().sort((a,b)=>b.d-a.d)
-   .filter(x=>mode==1?/amazon\./i.test(x.l):mode==2?!/amazon\./i.test(x.l):1);
+   .filter(x=>{
+  const u=x.l.toLowerCase(),t=x.t.toLowerCase();
+  const isA=/amazon\./.test(u)||/amazon/.test(t)||/\/visit\/|slredirect|tag=/.test(u);
+  return mode==1?isA:mode==2?!isA:1;
+});
    items.slice(page*20,(page+1)*20).forEach(n=>{
      let a=document.createElement('a');a.href=n.l;a.target='_blank';a.className='feed-item';
      let im=document.createElement('img');im.loading='lazy';im.src=`https://www.google.com/s2/favicons?domain=${new URL(n.l).hostname}&sz=16`;
