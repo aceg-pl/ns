@@ -120,6 +120,11 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
   <div class="scroll-pane"><div class="feed-list" id="feedListX8">Loading…</div></div>
 </div>
 
+<div class="feed-block">
+  <div class="block-title">🅰️ Amazon ↕️<span class="mv"></span></div>
+  <div class="scroll-pane"><div class="feed-list" id="feedListXA">Loading…</div></div>
+</div>
+
 <script>
 const sites=[{url:'https://www.onet.pl',d:'onet.pl'},{url:'https://www.wp.pl',d:'wp.pl'},{url:'https://www.interia.pl',d:'interia.pl'},{url:'https://www.gazeta.pl',d:'gazeta.pl'},{url:'https://www.polsatnews.pl',d:'polsatnews.pl'},{url:'https://expressbydgoski.pl',d:'expressbydgoski.pl'},{url:'https://www.rp.pl',d:'rp.pl'},{url:'https://www.newsweek.pl/lista-wydan',d:'newsweek.pl'},{url:'https://edition.cnn.com',d:'cnn.com'},{url:'https://www.bbc.com',d:'bbc.com'},{url:'https://www.reuters.com',d:'reuters.com'},{url:'https://www.flashscore.pl',d:'flashscore.pl'}];
 const siteIcons=document.getElementById('siteIcons');
@@ -138,7 +143,7 @@ const proxy1='https://api.allorigins.win/get?url=',proxy2='https://api.codetabs.
 function fR(f,r=1){return fetch(proxy1+encodeURIComponent(f.url)).then(x=>x.json()).then(d=>({ok:1,t:d.contents})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''})}
 function fRalt(f,r=1){return fetch(proxy2+encodeURIComponent(f.url)).then(x=>x.text()).then(t=>({ok:1,t})).catch(_=>r?fRalt(f,r-1):{ok:0,t:''})}
 
-function fNR(feeds,id,page=0){
+function fNR(feeds,id,page=0,mode=0){
  let el=document.getElementById(id);if(page===0)el.innerHTML='';
  Promise.all(feeds.map(f=>fR(f,1).then(r=>{
    if(!r.ok)return[];
@@ -152,7 +157,8 @@ function fNR(feeds,id,page=0){
 return {t,l,d:new Date(d)};
    });
  }))).then(all=>{
-   let items=all.flat().sort((a,b)=>b.d-a.d);
+   let items=all.flat().sort((a,b)=>b.d-a.d)
+   .filter(x=>mode==1?/amazon\./i.test(x.l):mode==2?!/amazon\./i.test(x.l):1);
    items.slice(page*20,(page+1)*20).forEach(n=>{
      let a=document.createElement('a');a.href=n.l;a.target='_blank';a.className='feed-item';
      let im=document.createElement('img');im.loading='lazy';im.src=`https://www.google.com/s2/favicons?domain=${new URL(n.l).hostname}&sz=16`;
@@ -172,7 +178,7 @@ titleSearch.oninput=()=>{let f=titleSearch.value.toLowerCase();document.querySel
 pageDownArrow.onclick=()=>scrollBy({top:innerHeight,behavior:'smooth'});
 topArrow.onclick=()=>scrollTo({top:0,behavior:'smooth'});
 
-function loadSeq(){fNR(feedsX0,'feedListX0');setTimeout(()=>fNR(feedsX1,'feedListX1'),400);setTimeout(()=>fNR(feedsX2,'feedListX2'),800);setTimeout(()=>fNR(feedsX3,'feedListX3'),1200);setTimeout(()=>fNR(feedsX4,'feedListX4'),1600);setTimeout(()=>fNR(feedsX5,'feedListX5'),2000);setTimeout(()=>fNR(feedsX6,'feedListX6'),2400);setTimeout(()=>fNR(feedsX7,'feedListX7'),2800);setTimeout(()=>fNR(feedsX8,'feedListX8'),3200);}
+function loadSeq(){fNR(feedsX0,'feedListX0');setTimeout(()=>fNR(feedsX1,'feedListX1'),400);setTimeout(()=>fNR(feedsX2,'feedListX2'),800);setTimeout(()=>fNR(feedsX3,'feedListX3'),1200);setTimeout(()=>fNR(feedsX4,'feedListX4'),1600);setTimeout(()=>fNR(feedsX5,'feedListX5'),2000);setTimeout(()=>fNR(feedsX6,'feedListX6'),2400);setTimeout(()=>fNR(feedsX7,'feedListX7'),2800);setTimeout(()=>fNR(feedsX8,'feedListX8',0,2),3200);setTimeout(()=>fNR(feedsXA,'feedListXA',0,1),3600);}
 loadSeq();
 
 (async()=>{
