@@ -166,7 +166,7 @@ return {t,l,d:new Date(d)};
 });
    items.slice(page*20,(page+1)*20).forEach(n=>{
      let a=document.createElement('a');a.href=n.l;a.target='_blank';a.className='feed-item';
-     let im=document.createElement('img');im.loading='lazy';im.src=`https://www.google.com/s2/favicons?domain=${new URL(n.l).hostname}&sz=16`;
+     let im=document.createElement('img');im.loading='lazy';const h=new URL(n.l).hostname,f=/pepper\.pl/.test(h)?'🇵🇱':/mydealz\.de/.test(h)?'🇩🇪':/hotukdeals\.com/.test(h)?'🇬🇧':/dealabs\.com/.test(h)?'🇫🇷':/chollometro\.com/.test(h)?'🇪🇸':0;f?(im.remove(),a.insertAdjacentText('afterbegin',f+' ')):im.src=`https://www.google.com/s2/favicons?domain=${h}&sz=16`;
      let sp=document.createElement('span'),rD=n.d,nD=new Date();
      sp.textContent=' '+((nD-rD)/36e5<24?`${String(rD.getHours()).padStart(2,'0')}:${String(rD.getMinutes()).padStart(2,'0')}`:`${String(rD.getDate()).padStart(2,'0')}/${String(rD.getMonth()+1).padStart(2,'0')}`);
      a.appendChild(im);a.appendChild(document.createTextNode(' '+n.t.slice(0,80)+(n.t.length>80?'…':'')));a.appendChild(sp);
