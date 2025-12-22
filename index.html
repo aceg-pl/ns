@@ -421,7 +421,7 @@ m.forEach(([t,id])=>{
  b.onclick=()=>document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'});
  c.appendChild(b);
 });
-siteIcons.parentNode.appendChild(c);
+siteIcons.parentNode.insertBefore(c,document.getElementById('searchLine'));
 })();
 
   
