@@ -379,28 +379,32 @@ $("d").onclick=()=>{
 };
      
 Promise.all([
-  fetch("https://api.metals.live/v1/spot").then(r=>r.json()).catch(()=>null),
-  fetch("https://api.frankfurter.app/latest?from=EUR&to=PLN,USD,GBP").then(r=>r.json()).catch(()=>null)
-]).then(([met,fx])=>{
-  const m=met?Object.fromEntries(met):{};
+  fetch("https://api.frankfurter.app/latest?from=EUR&to=PLN,USD,GBP")
+    .then(r=>r.json()).catch(()=>null),
+
+  fetch("https://stooq.com/q/l/?s=xauusd,xagusd,xpdusd,xcuusd&f=sd2t2ohlcv&h&e=json")
+    .then(r=>r.json()).catch(()=>null)
+]).then(([fx,met])=>{
   const r=fx?.rates||{};
+  const d=met?.data||[];
 
   const EURPLN=r.PLN||null;
   const USDPLN=(r.USD&&r.PLN)?r.PLN/r.USD:null;
   const GBPPLN=(r.GBP&&r.PLN)?r.PLN/r.GBP:null;
 
+  const get=(s)=>d.find(x=>x.symbol===s)?.close;
+
   markets.innerHTML=
    `💱 EUR/PLN ${EURPLN?.toFixed(2)||"—"} • 
     USD/PLN ${USDPLN?.toFixed(2)||"—"} • 
-    GBP/PLN ${GBPPLN?.toFixed(2)||"—"}<br>
-    🪙 Au ${m.gold?.toFixed(0)||"—"}$ • 
-    Ag ${m.silver?.toFixed(2)||"—"}$ • 
-    Cu ${m.copper?.toFixed(2)||"—"}$ • 
-    Pd ${m.palladium?.toFixed(0)||"—"}$`;
+    GBP/PLN ${GBPPLN?.toFixed(2)||"—"} • 
+    🪙 Au ${get("XAUUSD")||"—"}$ • 
+    Ag ${get("XAGUSD")||"—"}$ • 
+    Cu ${get("XCUUSD")||"—"}$ • 
+    Pd ${get("XPDUSD")||"—"}$`;
 }).catch(()=>{
   markets.innerHTML="<span class='mut'>Markets unavailable</span>";
 });
-
 
 const Y=today.getFullYear(), iso=ymd;
 
