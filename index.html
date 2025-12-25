@@ -384,9 +384,10 @@ Promise.all([
 ]).then(([met,fx])=>{
   const m=met?Object.fromEntries(met):{};
   const r=fx?.rates||{};
+
   const EURPLN=r.PLN||null;
-  const USDPLN=r.USD&&EURPLN?EURPLN/r.USD:null;
-  const GBPPLN=r.GBP&&EURPLN?EURPLN/r.GBP:null;
+  const USDPLN=(r.USD&&r.PLN)?r.PLN/r.USD:null;
+  const GBPPLN=(r.GBP&&r.PLN)?r.PLN/r.GBP:null;
 
   markets.innerHTML=
    `💱 EUR/PLN ${EURPLN?.toFixed(2)||"—"} • 
@@ -416,9 +417,7 @@ Promise.all(
   const h=all.flat();
   holidays.innerHTML =
  h.length
-  ? `<span style="white-space:nowrap">
-      🎌 Today: ${h.join(" • ")}
-     </span>`
+  ? `🎌 Today: ${h.join(" • ")}`
   : `<span class='mut'>No major public holidays today</span>`;
 });
 
