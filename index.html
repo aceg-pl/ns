@@ -377,10 +377,10 @@ $("d").onclick=()=>{
   const c=$("content");
   c.style.display=c.style.display==="none"?"block":"none";
 };
-
+     
 Promise.all([
   fetch("https://api.metals.live/v1/spot").then(r=>r.json()).catch(()=>null),
-  fetch("https://api.exchangerate.host/latest?base=EUR&symbols=PLN,USD,GBP").then(r=>r.json()).catch(()=>null)
+  fetch("https://api.frankfurter.app/latest?from=EUR&to=PLN,USD,GBP").then(r=>r.json()).catch(()=>null)
 ]).then(([met,fx])=>{
   const m=met?Object.fromEntries(met):{};
   const r=fx?.rates||{};
@@ -392,14 +392,15 @@ Promise.all([
   markets.innerHTML=
    `💱 EUR/PLN ${EURPLN?.toFixed(2)||"—"} • 
     USD/PLN ${USDPLN?.toFixed(2)||"—"} • 
-    GBP/PLN ${GBPPLN?.toFixed(2)||"—"} • 
-    Au ${m.gold?.toFixed(0)||"—"}$ • 
+    GBP/PLN ${GBPPLN?.toFixed(2)||"—"}<br>
+    🪙 Au ${m.gold?.toFixed(0)||"—"}$ • 
     Ag ${m.silver?.toFixed(2)||"—"}$ • 
     Cu ${m.copper?.toFixed(2)||"—"}$ • 
     Pd ${m.palladium?.toFixed(0)||"—"}$`;
 }).catch(()=>{
   markets.innerHTML="<span class='mut'>Markets unavailable</span>";
 });
+
 
 const Y=today.getFullYear(), iso=ymd;
 
