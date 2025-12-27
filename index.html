@@ -364,11 +364,11 @@ fetch("https://api.api-ninjas.com/v2/quoteoftheday",{
 })
 .catch(()=>quote.innerHTML='<span class="mut">Quote unavailable</span>');
 
-// 🔹 Fact / Trivia of the Day (no key)
+// 🔹 Fact of the Day (quote-style, no key)
 fetch("https://uselessfacts.jsph.pl/api/v2/facts/random")
 .then(r=>r.json())
 .then(f=>{
-  fact.innerHTML=`🧠 ${f.text}`;
+  fact.innerHTML=`<i>"${f.text.replace(/"/g,"&quot;")}"</i> <span style="font-weight:500">— Fact of the day</span>`;
 })
 .catch(()=>fact.innerHTML="");
   
