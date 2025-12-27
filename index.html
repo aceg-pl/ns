@@ -258,6 +258,7 @@ $("d").innerHTML=`
   <div id="weather" style="margin-top:4px;font-weight:400;font-size:13px;color:#000"></div>
   <div id="markets"></div>
   <div id="quote"></div>
+  <div id="fact" class="mut" style="margin-top:2px;font-size:12.5px"></div>
 `;
 
 (()=>{
@@ -362,6 +363,14 @@ fetch("https://api.api-ninjas.com/v2/quoteoftheday",{
   quote.innerHTML=`<i>"${a.quote.replace(/"/g,"&quot;")}"</i> <span style="font-weight:500">— ${a.author||"Unknown"}</span>`;
 })
 .catch(()=>quote.innerHTML='<span class="mut">Quote unavailable</span>');
+
+// 🔹 Fact / Trivia of the Day (no key)
+fetch("https://uselessfacts.jsph.pl/api/v2/facts/random")
+.then(r=>r.json())
+.then(f=>{
+  fact.innerHTML=`🧠 ${f.text}`;
+})
+.catch(()=>fact.innerHTML="");
   
 // 🔹 Movies (bold + extended)
 (async()=>{
