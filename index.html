@@ -100,9 +100,6 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 
 <div id="datebar">
   <div id="d"></div>
-  <div style="margin-top:2px;padding-top:2px;border-top:0">
-  <span id="holidays" style="font-size:12px"></span> • <span id="markets"></span>
-  </div>
   <div id="content" style="display:none;">
     <div id="otd"><h2>On this day</h2><div class="mut">loading…</div></div>
     <div id="mv"><h2>Movies</h2><div class="mut">loading…</div></div>
@@ -257,7 +254,9 @@ function getNamesday(){
   
 $("d").innerHTML=`
   <b>↕️ 📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday()||"<span class='mut'>none</span>"} ↕️</b>
+  <div id="holidays" style="font-size:12px"></div>
   <div id="weather" style="margin-top:4px;font-weight:400;font-size:13px;color:#000"></div>
+  <div id="markets"></div>
   <div id="quote"></div>
 `;
 
