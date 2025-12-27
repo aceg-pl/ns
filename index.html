@@ -432,11 +432,11 @@ Promise.all([
   markets.innerHTML=
    `💱 € ${EURPLN?.toFixed(2)||"—"} • 
     $ ${USDPLN?.toFixed(2)||"—"} • 
-    £ ${GBPPLN?.toFixed(2)||"—"}<br>
-    🪙 Au ${get("XAUUSD")||"—"}$ • 
-    Ag ${get("XAGUSD")||"—"}$ • 
-    Cu ${get("XCUUSD")||"—"}$ • 
-    Pd ${get("XPDUSD")||"—"}$`;
+    £ ${GBPPLN?.toFixed(2)||"—"} • 
+    🪙 Au ${get("XAUUSD")||"—"} • 
+    Ag ${get("XAGUSD")||"—"} • 
+    Cu ${get("XCUUSD")||"—"} • 
+    Pd ${get("XPDUSD")||"—"}`;
 }).catch(()=>{
   markets.innerHTML="<span class='mut'>Markets unavailable</span>";
 });
