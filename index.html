@@ -1,5 +1,16 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>News Portal</title><style>
-body{margin:0;padding:0;font-family:-apple-system,system-ui,Arial;background:#f5f5f5}
+:root{
+  --ui-font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+body{
+  margin:0;
+  padding:0;
+  font-family:var(--ui-font);
+  font-size:14px;
+  line-height:1.35;
+  background:#f5f5f5;
+  -webkit-text-size-adjust:100%;
+}
 .sticky-header{position:sticky;top:0;background:#f5f5f5;padding:16px 16px 0;margin:0;z-index:100;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
 h1{margin-bottom:10px}.sites{margin-bottom:4px;text-align:center}
 @media(max-width:480px){.sites{display:grid;grid-template-columns:repeat(6,1fr);justify-items:center;gap:6px 12px}}
@@ -17,7 +28,19 @@ h1{margin-bottom:10px}.sites{margin-bottom:4px;text-align:center}
 .mv{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:12px;cursor:pointer;user-select:none;display:flex;gap:4px}
 .mv span { padding: 0 4px; }
 button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
-#quote{text-align:center;font-style:italic;font-size:13px;color:#666;margin:4px 0;font-weight:400;max-width:800px;display:inline-block;line-height:1.3;white-space:nowrap;overflow:auto;text-overflow:clip}
+#quote{
+  font-family:var(--ui-font);
+  font-style:normal;
+  font-size:13px;
+  font-weight:400;
+  color:#666;
+  margin:4px 0;
+  line-height:1.35;
+  max-width:800px;
+  text-align:center;
+  white-space:normal;
+}
+#quote i{font-style:italic}
 #datebar{background:#fff;color:#000;font:14px/1.35 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Arial;border:1px solid #ddd;border-radius:8px;margin:6px 16px 12px;padding:4px 10px 6px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 #datebar #d{text-align:center;font-weight:600;cursor:pointer;padding:3px 0 4px;color:#000}
 #datebar a{color:#000;text-decoration:none;font-weight:500}
@@ -26,6 +49,19 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 #datebar #content>div{margin-bottom:6px}
 #d::after{content:"";display:block;clear:both}
 #d{display: flex;flex-direction: column;align-items: center;text-align: center;}
+#markets,
+#weather,
+#datebar,
+.feed-item span{
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum";
+}
+@media(max-width:480px){
+  body{font-size:13px}
+  #quote{font-size:12.5px}
+  #markets{font-size:12.5px}
+  .feed-item{font-size:12.5px}
+}
 </style></head><body>
   
 <div class="sticky-header">
