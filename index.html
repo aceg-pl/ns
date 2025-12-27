@@ -362,22 +362,16 @@ fetch("https://api.api-ninjas.com/v2/quoteoftheday",{
   if(!a||!a.quote)throw 0;
   quote.innerHTML=`<i>"${a.quote.replace(/"/g,"&quot;")}"</i> <span style="font-weight:500">— ${a.author||"Unknown"}</span>`;
 })
-.catch(()=>quote.innerHTML='<span class="mut">Quote unavailable</// 🔹 Fact of the Day (quote-style, no key)
+.catch(()=>quote.innerHTML='<span class="mut">Quote unavailable</span>');
+
+// 🔹 Fact / Trivia of the Day (no key)
 fetch("https://uselessfacts.jsph.pl/api/v2/facts/random")
 .then(r=>r.json())
 .then(f=>{
-  fact.innerHTML=`<i>"${f.text.replace(/"/g,"&quot;")}"</i> <span style="font-weight:500">— Fact of the day</span>`;
+  fact.innerHTML=`🧠 ${f.text}`;
 })
 .catch(()=>fact.innerHTML="");
-
-// 🔹 Trivia / Fact of the Day
-fetch("https://uselessfacts.jsph.pl/api/v2/facts/random")
-.then(r=>r.json())
-.then(f=>{
-  fact.innerHTML=`<i>"${f.text.replace(/"/g,"&quot;")}"</i> <span style="font-weight:500">— Fact of the day</span>`;
-})
-.catch(()=>fact.innerHTML="");
-
+  
 // 🔹 Movies (bold + extended)
 (async()=>{
  if(!tmdbKey){set("mv","<h2>Movies</h2><span class='mut'>add TMDb key</span>");return;}
