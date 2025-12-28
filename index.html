@@ -362,8 +362,8 @@ Promise.all([
   q=q&&q[0];
   if(!q||!q.quote)throw 0;
   quote.innerHTML=
-    `<i>"${q.quote.replace(/"/g,"&quot;")}" (${(q.author||"Unknown").replace(/"/g,"&quot;")})</i> · `+
-    `<span>${f&&f.text?f.text.replace(/"/g,"&quot;"):""}</span>`;
+    `📖 <i>"${q.quote.replace(/"/g,"&quot;")}" (${(q.author||"Unknown").replace(/"/g,"&quot;")})</i> · `+
+    `💡 <span>${f&&f.text?f.text.replace(/"/g,"&quot;"):""}</span>`;
 }).catch(()=>{
   quote.innerHTML='<span class="mut">Quote unavailable</span>';
 });
