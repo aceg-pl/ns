@@ -456,7 +456,7 @@ for(const lg of L){
   let html=`<div class="fx-league"><h3>${lg.n}</h3>`;
 
   for(const id of ids){
-    const f=await load(`https://v3.football.api-sports.io/fixtures?team=${id}&from=${today}&season=2025`);
+    const f=await load(`https://v3.football.api-sports.io/fixtures?league=${lg.id}&team=${id}&from=${today}`);
     f?.response?.forEach(x=>{
       html+=`<div class="fx-game">
         <span class="fx-date">${x.fixture.date.slice(0,16).replace("T"," ")}</span><br>
