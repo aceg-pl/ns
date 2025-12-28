@@ -363,7 +363,7 @@ Promise.all([
   if(!q||!q.quote)throw 0;
   quote.innerHTML=
     `📖 <i>"${q.quote.replace(/"/g,"&quot;")}" (${(q.author||"Unknown").replace(/"/g,"&quot;")})</i> · `+
-    `💡 <span>${f&&f.text?f.text.replace(/"/g,"&quot;"):""}</span>`;
+    `💡 <i>${f&&f.text?f.text.replace(/"/g,"&quot;"):""}</i>`;
 }).catch(()=>{
   quote.innerHTML='<span class="mut">Quote unavailable</span>';
 });
