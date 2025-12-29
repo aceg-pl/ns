@@ -517,7 +517,10 @@ document.getElementById("irLive")?.addEventListener("click",e=>{
  o=document.createElement("div");
  o.style="position:relative;margin:10px 16px;padding:10px;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.2)";
  o.innerHTML=`<div style="position:absolute;top:6px;right:8px;cursor:pointer;font-size:16px;color:#c00">❌</div>
- <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px">
+ <div style="display:grid;gap:8px;grid-template-columns:repeat(2,1fr)"
+     onload="
+       if(innerWidth>=768)this.style.gridTemplateColumns='repeat(3,1fr)'
+     ">
  ${imgs.map(u=>`<img loading="lazy" src="${u}" style="width:100%;border-radius:6px">`).join("")}
  </div>`;
  o.querySelector("div").onclick=close;
