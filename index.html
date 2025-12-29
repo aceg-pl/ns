@@ -88,12 +88,10 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
      style="flex:0 0 auto;width:180px;height:85px;
             border-radius:8px;overflow:hidden;
             box-shadow:0 0 4px rgba(0,0,0,.1);">
-  <img src="https://neige.meteociel.fr/satellite/anim_ir.gif"
-       alt="Europe IR clouds"
-       style="width:180px;height:85px;
-              object-fit:cover;
-              object-position:center top;
-              border-radius:8px;">
+  <img id="ecmwfMain"
+     src="https://neige.meteociel.fr/satellite/anim_ir.gif"
+     alt="Europe IR clouds"
+     style="width:180px;height:85px;object-fit:cover;object-position:center top;border-radius:8px;cursor:pointer">
 </div>
   </div>
 </div>
@@ -494,4 +492,38 @@ setTimeout(()=>{
 },1500);
 </script>
 
+<script>
+(()=>{let o;
+const imgs=[
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_T2_AVE.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_P0_AVE.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_All_PrecACU.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_All_PrecType.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_Wspd_AVE.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_VIS_AVE.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_Day_Lcloud_AVE.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_Day_Mcloud_AVE.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_SUN.png"
+];
+
+const close=()=>{o&&(o.remove(),o=0)};
+document.addEventListener("click",e=>{
+ if(o&&!o.contains(e.target)&&e.target.id!=="ecmwfMain")close();
+});
+
+document.getElementById("ecmwfMain")?.addEventListener("click",e=>{
+ e.stopPropagation();
+ if(o)return close();
+ o=document.createElement("div");
+ o.style="position:relative;margin:10px 16px;padding:10px;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.2)";
+ o.innerHTML=`<div style="position:absolute;top:6px;right:8px;cursor:pointer;font-size:16px;color:#c00">❌</div>
+ <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px">
+ ${imgs.map(u=>`<img loading="lazy" src="${u}" style="width:100%;border-radius:6px">`).join("")}
+ </div>`;
+ o.querySelector("div").onclick=close;
+ e.target.after(o);
+});
+})();
+</script>
+  
 </body></html>
