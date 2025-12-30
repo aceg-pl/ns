@@ -528,7 +528,7 @@ const open=(el,imgs)=>{
  ${imgs.map(u=>`<img loading="lazy" src="${u}" style="width:100%;border-radius:6px">`).join("")}
  </div>`;
  o.querySelector("div").onclick=close;
- el.after(o);
+ (document.getElementById("irLive")||el).after(o);
  if(innerWidth>=768)o.lastElementChild.style.gridTemplateColumns="repeat(3,1fr)";
 };
 
