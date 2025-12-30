@@ -494,43 +494,55 @@ setTimeout(()=>{
 
 <script>
 (()=>{let o;
-const imgs=[
-"https://meteo.imgw.pl/data/archiwum_map_synoptycznych/mapa_current_00.png",
-"https://modele.imgw.pl/cmm/wp-content/uploads/production/prognoza_synoptyczna/SYNOP_PROG_S.png",
-"https://cdn.shopify.com/s/files/1/0831/9408/5704/files/astro_calendar_december_2025_EN.jpg?v=1764259964",
-"https://modele.imgw.pl/cmm/wp-content/uploads/production/space_weather/space_weather/nowcast_eu.png",
+
+const IMG_IR=[
 "https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_T2_AVE.png",
 "https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_P0_AVE.png",
-"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_All_PrecACU.png",
-"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_All_PrecType.png",
-"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_Wspd_AVE.png",
-"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_VIS_AVE.png",
-"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_Day_Lcloud_AVE.png",
-"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_Day_Mcloud_AVE.png",
-"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_daily_maps/ECMWF_SUN.png"
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_All_PrecACU.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_All_PrecType.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_Wspd_AVE.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_VIS_AVE.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_Day_Lcloud_AVE.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_Day_Mcloud_AVE.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/ecmwf/ECMWF_SUN.png"
+];
+
+const IMG_PRESSURE=[
+"https://meteo.imgw.pl/data/archiwum_map_synoptycznych/mapa_current_00.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/prognoza_synoptyczna/SYNOP_PROG_S.png",
+"https://modele.imgw.pl/cmm/wp-content/uploads/production/space_weather/space_weather/nowcast_eu.png",
+"https://cdn.shopify.com/s/files/1/0831/9408/5704/files/astro_calendar_december_2025_EN.jpg?v=1764259964"
 ];
 
 const close=()=>{o&&(o.remove(),o=0)};
 document.addEventListener("click",e=>{
- if(o&&!o.contains(e.target)&&!e.target.closest("#irLive"))close();
+ if(o&&!o.contains(e.target)&&!e.target.closest("#irLive,#pressureChart"))close();
 });
-      
-document.getElementById("irLive")?.addEventListener("click",e=>{
- e.stopPropagation();
- if(o)return close();
+
+const open=(el,imgs)=>{
+ close();
  o=document.createElement("div");
  o.style="position:relative;margin:10px 16px;padding:10px;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.2)";
  o.innerHTML=`<div style="position:absolute;top:6px;right:8px;cursor:pointer;font-size:16px;color:#c00">❌</div>
- <div style="display:grid;gap:8px;grid-template-columns:repeat(2,1fr)"
-     onload="
-       if(innerWidth>=768)this.style.gridTemplateColumns='repeat(3,1fr)'
-     ">
+ <div style="display:grid;gap:8px;grid-template-columns:repeat(2,1fr)">
  ${imgs.map(u=>`<img loading="lazy" src="${u}" style="width:100%;border-radius:6px">`).join("")}
  </div>`;
  o.querySelector("div").onclick=close;
- e.target.after(o);
+ el.after(o);
+ if(innerWidth>=768)o.lastElementChild.style.gridTemplateColumns="repeat(3,1fr)";
+};
+
+document.getElementById("irLive")?.addEventListener("click",e=>{
+ e.stopPropagation();
+ open(e.currentTarget,IMG_IR);
 });
+
+document.getElementById("pressureChart")?.addEventListener("click",e=>{
+ e.stopPropagation();
+ open(e.currentTarget,IMG_PRESSURE);
+});
+
 })();
 </script>
   
-</body></html>
+</body></html
