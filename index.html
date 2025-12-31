@@ -162,7 +162,7 @@ button.loadmore{width:100%;padding:6px;border:0;background:#eee;cursor:pointer}
 <script>
 const sites=[{url:'https://www.onet.pl',d:'onet.pl'},{url:'https://www.wp.pl',d:'wp.pl'},{url:'https://www.interia.pl',d:'interia.pl'},{url:'https://www.gazeta.pl',d:'gazeta.pl'},{url:'https://www.polsatnews.pl',d:'polsatnews.pl'},{url:'https://expressbydgoski.pl',d:'expressbydgoski.pl'},{url:'https://www.rp.pl',d:'rp.pl'},{url:'https://www.newsweek.pl/lista-wydan',d:'newsweek.pl'},{url:'https://edition.cnn.com',d:'cnn.com'},{url:'https://www.bbc.com',d:'bbc.com'},{url:'https://www.reuters.com',d:'reuters.com'},{url:'https://www.flashscore.pl',d:'flashscore.pl'}];
 const siteIcons=document.getElementById('siteIcons');
-sites.forEach(s=>{let i=document.createElement('img');i.loading='lazy';i.src=`https://www.google.com/s2/favicons?domain=${s.d}&sz=24`;i.onclick=()=>open(s.url,'_blank');siteIcons.appendChild(i);});
+sites.forEach(s=>{let i=document.createElement('img');i.loading='lazy';i.src=`https://www.google.com/s2/favicons?domain=${s.d}&sz=24`;i.onclick=()=>window.open(s.url,'_blank');siteIcons.appendChild(i);});
 const feedsX0=[{url:'https://wiadomosci.onet.pl/.feed'},{url:'https://wiadomosci.gazeta.pl/pub/rss/wiadomosci.htm'},{url:'https://www.polsatnews.pl/rss/wszystkie.xml'},{url:'https://wiadomosci.wp.pl/rss.xml'},{url:'https://wydarzenia.interia.pl/feed'}];
 const feedsX1=[{url:'https://www.polsatsport.pl/rss/wszystkie.xml'},{url:'https://www.sport.pl/pub/rss/sport.xml'},{url:'https://www.soccernews.com/category/la-liga/feed/'}];
 const feedsX2=[{url:'https://www.theverge.com/rss/index.xml'},{url:'https://www.wired.com/feed/rss'},{url:'https://www.sciencedaily.com/rss/top.xml'}];
@@ -567,7 +567,7 @@ document.addEventListener("click",e=>{
  if(o&&!o.contains(e.target)&&!e.target.closest("#irLive,#pressureChart"))close();
 });
 
-const open=(el,imgs)=>{
+const openOverlay=(el,imgs)=>{
  close();
  o=document.createElement("div");
  o.style="position:relative;margin:10px 16px;padding:10px;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.2)";
@@ -582,12 +582,12 @@ const open=(el,imgs)=>{
 
 document.getElementById("irLive")?.addEventListener("click",e=>{
  e.stopPropagation();
- open(e.currentTarget,IMG_IR);
+ openOverlay(e.currentTarget,IMG_IR);
 });
 
 document.getElementById("pressureChart")?.addEventListener("click",e=>{
  e.stopPropagation();
- open(e.currentTarget,IMG_PRESSURE);
+ openOverlay(e.currentTarget,IMG_PRESSURE);
 });
 
 })();
