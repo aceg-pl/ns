@@ -174,6 +174,40 @@ const feedsX7=[{url:'http://rss.swiatczytnikow.pl/SwiatCzytnikow'}];
 const feedsX8=[{url:'https://www.pepper.pl/rss/wszystkie'},{url:'https://www.mydealz.de/rss/alles'},{url:'https://www.hotukdeals.com/rss/new'},{url:'https://www.dealabs.com/rss/tous'},{url:'https://www.chollometro.com/rss/nuevos'}];
 const feedsXA=feedsX8;
 
+const srcState={}; // global on/off per domain
+
+function addSrcIcons(blockId,feeds){
+ const h=document.querySelector(`#${blockId}`).closest('.feed-block')
+   .querySelector('.block-title');
+ const b=document.createElement('span');
+ b.className='srcbar';
+ feeds.forEach(f=>{
+  const d=new URL(f.url).hostname.replace(/^www\./,'');
+  srcState[d]=1;
+  const i=document.createElement('img');
+  i.src=`https://www.google.com/s2/favicons?domain=${d}&sz=16`;
+  i.className='on';
+  i.title=d;
+  i.onclick=e=>{
+    e.stopPropagation();
+    srcState[d]^=1;
+    i.classList.toggle('on',srcState[d]);
+    filterBySource();
+  };
+  b.appendChild(i);
+ });
+ h.appendChild(b);
+}
+
+function filterBySource(){
+ document.querySelectorAll('.feed-item').forEach(a=>{
+  try{
+    const d=new URL(a.href).hostname.replace(/^www\./,'');
+    a.style.display=srcState[d]?'':'none';
+  }catch(e){}
+ });
+}
+
 addSrcIcons('feedListX0',feedsX0);
 addSrcIcons('feedListX1',feedsX1);
 addSrcIcons('feedListX2',feedsX2);
@@ -228,40 +262,6 @@ return {t,l,d:new Date(d)};
 titleSearch.oninput=()=>{let f=titleSearch.value.toLowerCase();document.querySelectorAll('.feed-item').forEach(x=>x.style.display=x.textContent.toLowerCase().includes(f)?'':'none')};
 pageDownArrow.onclick=()=>scrollBy({top:innerHeight,behavior:'smooth'});
 topArrow.onclick=()=>scrollTo({top:0,behavior:'smooth'});
-
-const srcState={}; // global on/off per domain
-
-function addSrcIcons(blockId,feeds){
- const h=document.querySelector(`#${blockId}`).closest('.feed-block')
-   .querySelector('.block-title');
- const b=document.createElement('span');
- b.className='srcbar';
- feeds.forEach(f=>{
-  const d=new URL(f.url).hostname.replace(/^www\./,'');
-  srcState[d]=1;
-  const i=document.createElement('img');
-  i.src=`https://www.google.com/s2/favicons?domain=${d}&sz=16`;
-  i.className='on';
-  i.title=d;
-  i.onclick=e=>{
-    e.stopPropagation();
-    srcState[d]^=1;
-    i.classList.toggle('on',srcState[d]);
-    filterBySource();
-  };
-  b.appendChild(i);
- });
- h.appendChild(b);
-}
-
-function filterBySource(){
- document.querySelectorAll('.feed-item').forEach(a=>{
-  try{
-    const d=new URL(a.href).hostname.replace(/^www\./,'');
-    a.style.display=srcState[d]?'':'none';
-  }catch(e){}
- });
-}
   
 function loadSeq(){fNR(feedsX0,'feedListX0');setTimeout(()=>fNR(feedsX1,'feedListX1'),400);setTimeout(()=>fNR(feedsX2,'feedListX2'),800);setTimeout(()=>fNR(feedsX3,'feedListX3'),1200);setTimeout(()=>fNR(feedsX4,'feedListX4'),1600);setTimeout(()=>fNR(feedsX5,'feedListX5'),2000);setTimeout(()=>fNR(feedsX6,'feedListX6'),2400);setTimeout(()=>fNR(feedsX7,'feedListX7'),2800);setTimeout(()=>fNR(feedsX8,'feedListX8',0,2),3200);setTimeout(()=>fNR(feedsXA,'feedListXA',0,1),3600);}
 loadSeq();
