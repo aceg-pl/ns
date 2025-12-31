@@ -221,10 +221,10 @@ loadSeq();
 const tmdbKey="179d23dc4b4a1ba27263fcc2503d5e3d";
 const footKey="f1637751ac2e41dc8cfbe1f9492c0a4b";                
 
-const today=new Date(),
-ymd=today.toISOString().slice(0,10),
-MM=('0'+(today.getMonth()+1)).slice(-2),
-DD=('0'+today.getDate()).slice(-2);
+const today=new Date(new Date().toLocaleDateString('en-CA')+'T12:00'),
+      ymd=today.toISOString().slice(0,10),
+      MM=('0'+(today.getMonth()+1)).slice(-2),
+      DD=('0'+today.getDate()).slice(-2);
 const $=id=>document.getElementById(id),set=(id,html)=>($(id).innerHTML=html);
 
 // 🔹 Static Polish names-day array
@@ -244,14 +244,13 @@ const namesdayArray=[
 ];
 
 // function to get today’s names
-function getNamesday(){
-  const d=new Date();
+function getNamesday(d){
   const m=d.getMonth(),day=d.getDate()-1;
-  return (namesdayArray[m]&&namesdayArray[m][day])?namesdayArray[m][day]:"";
+  return namesdayArray[m]?.[day]||"";
 }
   
 $("d").innerHTML=`
-  <b>↕️ 📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday()||"<span class='mut'>none</span>"} ↕️</b>
+  <b>↕️ 📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday(today)||"<span class='mut'>none</span>"} ↕️</b>
   <div id="holidays" style="font-size:12px"></div>
   <div id="weather" style="margin-top:4px;font-weight:400;font-size:13px;color:#000"></div>
   <div id="markets"></div>
