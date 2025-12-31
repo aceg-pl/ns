@@ -293,13 +293,12 @@ const namesdayArray=[
 ];
 
 // function to get today’s names
-function getNamesday(d){
-  const m=d.getMonth(),day=d.getDate()-1;
-  return namesdayArray[m]?.[day]||"";
+function getNamesday(){
+  return namesdayArray[parseInt(MM,10)-1]?.[parseInt(DD,10)-1]||"";
 }
   
 $("d").innerHTML=`
-  <b>↕️ 📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday(today)||"<span class='mut'>none</span>"} ↕️</b>
+  <b>↕️ 📅 ${ymd} (${today.toLocaleDateString('pl-PL',{weekday:'long'})}) — 🕊️ ${getNamesday()||"<span class='mut'>none</span>"}} ↕️</b>
   <div id="holidays" style="font-size:12px"></div>
   <div id="weather" style="margin-top:4px;font-weight:400;font-size:13px;color:#000"></div>
   <div id="markets"></div>
