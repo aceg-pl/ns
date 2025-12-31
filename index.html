@@ -270,7 +270,7 @@ loadSeq();
 const tmdbKey="179d23dc4b4a1ba27263fcc2503d5e3d";
 const footKey="f1637751ac2e41dc8cfbe1f9492c0a4b";                
 
-const today=new Date(new Date().toLocaleDateString('en-CA')+'T12:00'),
+const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate(),12),
       ymd=today.toISOString().slice(0,10),
       MM=('0'+(today.getMonth()+1)).slice(-2),
       DD=('0'+today.getDate()).slice(-2);
