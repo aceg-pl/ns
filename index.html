@@ -596,6 +596,6 @@ document.getElementById("pressureChart")?.addEventListener("click",e=>{
 })();
 </script>
 
-<script>themeToggle.onclick=()=>document.body.classList.toggle("light"),localStorage.theme=document.body.classList.contains("light")?"light":"dark";localStorage.theme==="light"&&document.body.classList.add("light");</script>
+<script>(localStorage.theme==="dark")&&document.body.classList.remove("light");themeToggle.onclick=()=>document.body.classList.toggle("light"),localStorage.theme=document.body.classList.contains("light")?"light":"dark";</script>
 
 </body></html
