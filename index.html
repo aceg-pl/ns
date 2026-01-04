@@ -2,14 +2,8 @@
 :root{
   --ui-font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
-body{
-  margin:0;
-  padding:0;
-  font-family:var(--ui-font);
-  font-size:14px;
-  line-height:1.35;
-  -webkit-text-size-adjust:100%;
-}
+body{margin:0;padding:0;font-family:var(--ui-font);font-size:14px;line-height:1.35;-webkit-text-size-adjust:100%;background:var(--bg,#f5f5f5);color:var(--txt,#000)}
+body.dark{--bg:#111;--txt:#e5e7eb}
 .sticky-header{position:sticky;top:0;background:#f5f5f5;padding:16px 16px 0;margin:0;z-index:100;box-shadow:0 2px 4px rgba(0,0,0,0.05)}
 h1{margin-bottom:10px}.sites{margin-bottom:4px;text-align:center}
 @media(max-width:480px){.sites{display:grid;grid-template-columns:repeat(6,1fr);justify-items:center;gap:6px 12px}}
@@ -596,6 +590,6 @@ document.getElementById("pressureChart")?.addEventListener("click",e=>{
 })();
 </script>
 
-<script>(localStorage.theme==="dark")||document.body.classList.add("light"),themeToggle.onclick=()=>document.body.classList.toggle("light"),localStorage.theme=document.body.classList.contains("light")?"light":"dark"</script>
+<script>document.body.classList.toggle("dark",localStorage.theme==="dark"),themeToggle.onclick=()=>{document.body.classList.toggle("dark");localStorage.theme=document.body.classList.contains("dark")?"dark":"light"}</script>
 
 </body></html
