@@ -599,12 +599,6 @@ document.getElementById("pressureChart")?.addEventListener("click",e=>{
 })();
 </script>
 
-<script>
-document.getElementById('themeToggle').onclick=()=>{
-  document.body.classList.toggle('dark');
-  localStorage.themeToggle= document.body.classList.contains('dark') ? 'dark' : 'bright';
-};
-if(localStorage.themeToggle==='dark')document.body.classList.add('dark');
-</script>
+<script>const id='dark-mode-filter-style';let el=document.getElementById(id);const dm=localStorage.getItem('dm')==='1';document.getElementById('themeToggle').onclick=()=>{const on=dm;if(on){el&&el.remove();localStorage.setItem('dm','0');dm=false;}else{if(!el){el=document.createElement('style');el.id=id;el.textContent=`html{filter:invert(1) hue-rotate(180deg);background:#121212!important}img,video,iframe,picture,svg,canvas{filter:invert(1) hue-rotate(180deg)!important}`;document.head.appendChild(el);}localStorage.setItem('dm','1');dm=true;}};if(dm){el=document.createElement('style');el.id=id;el.textContent=`html{filter:invert(1) hue-rotate(180deg);background:#121212!important}img,video,iframe,picture,svg,canvas{filter:invert(1) hue-rotate(180deg)!important}`;document.head.appendChild(el);}</script>
   
 </body></html
